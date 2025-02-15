@@ -13,7 +13,7 @@ interface EventInfo {
     numOfParticipants: string;
     location: string;
     emailPoster?: File;
-    participantList?: File
+    participantList?: File;
 }
 
 interface ReceiptInfo {
@@ -26,6 +26,7 @@ interface Receipt {
     description: string;
     paymentMethod?: string;
     amount: string;
+    copyOfReceipt?: File;
     additionalDocs?: Record<string, File>[];
 }
 

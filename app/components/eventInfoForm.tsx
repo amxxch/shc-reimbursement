@@ -4,43 +4,54 @@ import { useState } from 'react';
 import InputTextBox from './inputTextBox';
 import InputFileBox from './inputFileBox';
 import { EventInfo } from '../types';
+import FormButton from './formButton';
 
 interface EventInfoProps {
     eventInfo: EventInfo;
     onChange: (info: EventInfo) => void;
+    currentStep: number;
+    setCurrentStep: (n: number) => void;
 }
 
-const EventInfoForm = ({ eventInfo, onChange } : EventInfoProps) => {
+const EventInfoForm = ({ eventInfo, onChange, currentStep, setCurrentStep } : EventInfoProps) => {
 
-    const [errors, setErrors] = useState<Partial<EventInfo>>({});
+    const [errors, setErrors] = useState<Partial<Record<keyof EventInfo, string>>>({});
 
-    const handleEventInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const name = e.target.name
+        const file = e.target.files?.[0];
+        onChange({ ...eventInfo, [name]: file });
+    };
+
+    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         onChange({ ...eventInfo, [name]: value });
     };
 
-    const handleNext = async (e: React.FormEvent) => {
+    const handleNextStep = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Simple validation logic
-        const newErrors: Partial<EventInfo> = {};
+        const newErrors: Partial<Record<keyof EventInfo, string>> = {};
 
         if (!eventInfo.eventName) newErrors.eventName = 'Event name is required';
         if (!eventInfo.eventDate) newErrors.eventDate = 'Event date is required';
         if (!eventInfo.numOfParticipants) newErrors.numOfParticipants = 'Number of participants is required';
         if (!eventInfo.location) newErrors.location = 'Location is required';
+        if (!eventInfo.emailPoster) newErrors.emailPoster = 'Email or Poster is required';
+        // if (!eventInfo.participantList) newErrors.participantList = 'Participant list is required'
 
         // add more validation logic (maybe to phone number, staff no.)
 
         if (Object.keys(newErrors).length === 0) {
-            alert('Form submitted successfully');
+            setCurrentStep(currentStep + 1);
         } else {
             setErrors(newErrors);
         }
     };
 
     return (
-            <form onSubmit={ handleNext }>
+            <form>
                 <hr className="mt-4 mb-4 border-t-2 border-gray-300" />
                 <h2 className="text-xl font-bold mb-4 text-center">Event Details</h2>
                 <InputTextBox
@@ -49,7 +60,7 @@ const EventInfoForm = ({ eventInfo, onChange } : EventInfoProps) => {
                     id="eventName"
                     name="eventName"
                     value={eventInfo.eventName}
-                    onChange={handleEventInfoChange}
+                    onChange={handleTextChange}
                     isRequired={true}
                     error={errors.eventName}
                 />
@@ -59,7 +70,7 @@ const EventInfoForm = ({ eventInfo, onChange } : EventInfoProps) => {
                     id="eventDate"
                     name="eventDate"
                     value={eventInfo.eventDate}
-                    onChange={handleEventInfoChange}
+                    onChange={handleTextChange}
                     isRequired={true}
                     error={errors.eventDate}
                 />
@@ -69,7 +80,7 @@ const EventInfoForm = ({ eventInfo, onChange } : EventInfoProps) => {
                     id="committee"
                     name="committee"
                     value={eventInfo.committee}
-                    onChange={handleEventInfoChange}
+                    onChange={handleTextChange}
                     isRequired={false}
                     error={errors.committee}
                 />
@@ -79,7 +90,7 @@ const EventInfoForm = ({ eventInfo, onChange } : EventInfoProps) => {
                     id="numOfParticipants"
                     name="numOfParticipants"
                     value={eventInfo.numOfParticipants}
-                    onChange={handleEventInfoChange}
+                    onChange={handleTextChange}
                     isRequired={true}
                     error={errors.numOfParticipants}
                 />
@@ -89,25 +100,34 @@ const EventInfoForm = ({ eventInfo, onChange } : EventInfoProps) => {
                     id="location"
                     name="location"
                     value={eventInfo.location}
-                    onChange={handleEventInfoChange}
+                    onChange={handleTextChange}
                     isRequired={true}
                     error={errors.location}
                 />
 
                 <InputFileBox
                     label="Event poster or mass email"
-                    id="eventPoster"
-                    name="eventPoster"
-                    onChange={handleEventInfoChange}
+                    id="emailPoster"
+                    name="emailPoster"
+                    onChange={handleFileChange}
                     isRequired={true}
+                    error={errors.emailPoster}
                 />
 
                 <InputFileBox
                     label="Participant list"
+                    description="*Except for compulsory events, such as High Table Dinner"
                     id="participantList"
                     name="participantList"
-                    onChange={handleEventInfoChange}
-                    isRequired={true}
+                    onChange={handleFileChange}
+                    isRequired={false}
+                    error={errors.participantList}
+                />
+
+                <FormButton 
+                    currentStep={currentStep} 
+                    setCurrentStep={setCurrentStep} 
+                    handleNextStep={handleNextStep} 
                 />
         </form>
     );

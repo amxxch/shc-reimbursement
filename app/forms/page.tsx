@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { ClaimantInfo, EventInfo, ReceiptInfo, Receipt, ReimbursementRequest } from '../types';
 import ClaimantInfoForm from '../components/claimantInfoForm';
 import EventInfoForm from '../components/eventInfoForm';
 import ReceiptInfoForm from '../components/receiptInfoForm';
 import AdditionalDocsForm from '../components/additionalDocsForm';
 import Steppers from '../components/steppers';
+import FormButton from '../components/formButton';
 
 
 const FormsPage = () => {
@@ -53,19 +55,6 @@ const FormsPage = () => {
         }
     }
 
-    const renderFormPage = () => {
-        switch (currentStep) {
-            case 1:
-                return <ClaimantInfoForm claimantInfo={claimantInfo} onChange={setClaimantInfo} />
-            case 2:
-                return <EventInfoForm eventInfo={eventInfo} onChange={setEventInfo} />
-            case 3:
-                return <ReceiptInfoForm receiptInfo={receiptInfo} onChange={setReceiptInfo} />
-            case 4:
-                return <AdditionalDocsForm receiptInfo={receiptInfo} onChange={setReceiptInfo} />
-        }
-    }
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
     };
@@ -81,34 +70,35 @@ const FormsPage = () => {
                 <h6 className="mb-6 text-center italic ">*Please submit this form as soon as possible after the event has ended.</h6>
                 {/* <Steppers steps={formSteps} /> */}
 
-                {renderFormPage()}
-
-                {currentStep > 1 && (
-                    <button
-                        className="w-full mt-4 px-4 py-2 bg-orange-400 text-white font-semibold rounded-md hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        onClick={() => previousStep()}
-                    >
-                        Previous
-                    </button>
-                )}
-
-                {currentStep < formSteps.length && (
-                    <button
-                        className="w-full mt-4 px-4 py-2 bg-orange-400 text-white font-semibold rounded-md hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        onClick={() => nextStep()}
-                    >
-                        Next
-                    </button>
-                )}
-
-                {currentStep === formSteps.length && (
-                    <button
-                        type="submit"
-                        className="w-full mt-4 px-4 py-2 bg-orange-400 text-white font-semibold rounded-md hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                        Submit
-                    </button>
-                )}
+                {currentStep === 1 && 
+                <ClaimantInfoForm 
+                    claimantInfo={claimantInfo} 
+                    onChange={setClaimantInfo} 
+                    currentStep={currentStep} 
+                    setCurrentStep={setCurrentStep} 
+                />}
+                {currentStep === 2 && 
+                <EventInfoForm 
+                    eventInfo={eventInfo} 
+                    onChange={setEventInfo} 
+                    currentStep={currentStep} 
+                    setCurrentStep={setCurrentStep}
+                />}
+                {currentStep === 3 && 
+                <ReceiptInfoForm 
+                    receiptInfo={receiptInfo} 
+                    onChange={setReceiptInfo} 
+                    currentStep={currentStep} 
+                    setCurrentStep={setCurrentStep}
+                />}
+                {currentStep === 4 && 
+                <AdditionalDocsForm 
+                    receiptInfo={receiptInfo} 
+                    onChange={setReceiptInfo} 
+                    currentStep={currentStep} 
+                    setCurrentStep={setCurrentStep}
+                    handleSubmit={handleSubmit}
+                />}
             </motion.div>
         </div>
     );

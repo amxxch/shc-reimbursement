@@ -3,13 +3,17 @@
 import { useState } from 'react';
 import InputTextBox from './inputTextBox';
 import { ClaimantInfo } from '../types';
+import { FaArrowRight } from 'react-icons/fa';
+import FormButton from './formButton';
 
 interface ClaimantInfoProps {
     claimantInfo: ClaimantInfo;
     onChange: (info: ClaimantInfo) => void;
+    currentStep: number;
+    setCurrentStep: (n: number) => void;
 }
 
-const ClaimantInfoForm = ({ claimantInfo, onChange } : ClaimantInfoProps) => {
+const ClaimantInfoForm = ({ claimantInfo, onChange, currentStep, setCurrentStep } : ClaimantInfoProps) => {
 
     const [errors, setErrors] = useState<Partial<ClaimantInfo>>({});
 
@@ -18,7 +22,7 @@ const ClaimantInfoForm = ({ claimantInfo, onChange } : ClaimantInfoProps) => {
         onChange({ ...claimantInfo, [name]: value });
     };
 
-    const handleNext = async (e: React.FormEvent) => {
+    const handleNextStep = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Simple validation logic
@@ -35,14 +39,14 @@ const ClaimantInfoForm = ({ claimantInfo, onChange } : ClaimantInfoProps) => {
         // add more validation logic (maybe to phone number, staff no.)
 
         if (Object.keys(newErrors).length === 0) {
-            alert('Form submitted successfully');
+            setCurrentStep(currentStep + 1);
         } else {
             setErrors(newErrors);
         }
     };
 
     return (
-            <form onSubmit={ handleNext }>
+            <form>
                 <hr className="mt-4 mb-4 border-t-2 border-gray-300" />
                 <h2 className="text-xl font-bold mb-2 text-center">Claimant Information</h2>
                 <InputTextBox
@@ -95,6 +99,13 @@ const ClaimantInfoForm = ({ claimantInfo, onChange } : ClaimantInfoProps) => {
                     isRequired={true}
                     error={errors.phoneNo}
                 />
+
+                <FormButton 
+                    currentStep={currentStep} 
+                    setCurrentStep={setCurrentStep} 
+                    handleNextStep={handleNextStep} 
+                />
+
         </form>
     );
 };
