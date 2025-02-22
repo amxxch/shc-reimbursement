@@ -1,34 +1,8 @@
-// import prisma from "@/prisma/client";
-// import { NextApiRequest, NextApiResponse } from "next";
-// import { NextRequest, NextResponse } from "next/server";
-// import { json } from "stream/consumers";
-
-// export async function POST(req: NextApiRequest, res: NextApiResponse) {
-//     const body = req.body;
-    // const body = await req.formData();
-
-    // const validation = schema.safeParse(body);
-    // if (!validation.success)
-    //     return NextResponse.json(validation.error.errors, { status: 400 })
-    // console.log('received', body)
-
-    // const newRequest = await prisma.user.create({
-    //     data: {
-    //         name: body.name,
-    //         email: body.email,
-    //     }
-    // })
-    
-//     return NextResponse.json(body, { status: 201 })
-// }
-
 import prisma from "@/prisma/client";
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
-import AWS from 'aws-sdk';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import fs from 'fs';
 
 const s3Client = new S3Client({
     region: process.env.AWS_REGION,
