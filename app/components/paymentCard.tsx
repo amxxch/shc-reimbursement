@@ -1,12 +1,13 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { Url } from 'url'
 
 interface Props {
     icon: any,
     name: String,
     description: string,
-    href: String
+    href: Url
 }
 
 const PaymentCard = ({ icon, name, description, href }: Props) => {

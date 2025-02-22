@@ -12,8 +12,8 @@ interface EventInfo {
     committee?: string;
     numOfParticipants: string;
     location: string;
-    emailPoster?: File;
-    participantList?: File;
+    emailPoster: File;
+    participantList: File;
 }
 
 interface ReceiptInfo {
@@ -22,12 +22,12 @@ interface ReceiptInfo {
 }
 
 interface Receipt {
-    id: number;
+    receiptId: number;
     description: string;
-    paymentMethod?: string;
+    paymentMethod: string;
     amount: string;
     copyOfReceipt?: File;
-    additionalDocs?: Record<string, File>[];
+    additionalDocs?: Record<string, File>;
 }
 
 interface ReimbursementRequest {

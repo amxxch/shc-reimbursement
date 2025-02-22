@@ -28,7 +28,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
             ...receiptInfo,
             receipts: [
                 ...receiptInfo.receipts.map((receipt) => 
-                receipt.id === id ? ({ ...receipt, [name]: value}) : receipt)
+                receipt.receiptId === id ? ({ ...receipt, [name]: value}) : receipt)
             ],
         });
     };
@@ -53,9 +53,9 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
             <hr className="mt-4 mb-4 border-t-2 border-gray-300" />
                 <h2 className="text-xl font-bold mb-4 text-center">Additional Documents</h2>
                 {receiptInfo.receipts.map((receipt, index) => (
-                <div key={receipt.id} className="mb-4 p-4 border rounded-lg shadow-sm">
+                <div key={receipt.receiptId} className="mb-4 p-4 border rounded-lg shadow-sm bg-white">
                     <label className="block text-lg font-bold text-gray-900 mb-2">
-                        Receipt {receipt.id}
+                        Receipt {receipt.receiptId}
                     </label>
 
                     <label className="block text-md font-bold text-gray-700 mb-2">
@@ -63,7 +63,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                     </label>
 
                     <label className="block text-md font-bold text-gray-700 mb-2">
-                        Amount: HKD$ {receipt.amount}
+                        Amount: HK$ {receipt.amount}
                     </label>
 
                     {(receipt.paymentMethod === 'Cash' || receipt.paymentMethod === 'Octopus') &&
@@ -78,7 +78,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 label="Bank Statement / Screenshot of Transaction History"
                                 id="bankStatement"
                                 name="bankStatement"
-                                onChange={e => handleReceiptChange(receipt.id, e)}
+                                onChange={e => handleReceiptChange(receipt.receiptId, e)}
                                 isRequired={true}
                             />
 
@@ -86,7 +86,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 label="A copy of Bank Card"
                                 id="bankCard"
                                 name="bankCard"
-                                onChange={e => handleReceiptChange(receipt.id, e)}
+                                onChange={e => handleReceiptChange(receipt.receiptId, e)}
                                 isRequired={true}
                             />
                         </div>

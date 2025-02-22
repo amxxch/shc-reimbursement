@@ -8,24 +8,24 @@ import FormButton from './formButton';
 
 interface EventInfoProps {
     eventInfo: EventInfo;
-    onChange: (info: EventInfo) => void;
+    setEventInfo: (info: EventInfo) => void;
     currentStep: number;
     setCurrentStep: (n: number) => void;
 }
 
-const EventInfoForm = ({ eventInfo, onChange, currentStep, setCurrentStep } : EventInfoProps) => {
+const EventInfoForm = ({ eventInfo, setEventInfo, currentStep, setCurrentStep } : EventInfoProps) => {
 
     const [errors, setErrors] = useState<Partial<Record<keyof EventInfo, string>>>({});
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name
         const file = e.target.files?.[0];
-        onChange({ ...eventInfo, [name]: file });
+        setEventInfo({ ...eventInfo, [name]: file });
     };
 
     const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        onChange({ ...eventInfo, [name]: value });
+        setEventInfo({ ...eventInfo, [name]: value });
     };
 
     const handleNextStep = async (e: React.FormEvent) => {
@@ -37,6 +37,7 @@ const EventInfoForm = ({ eventInfo, onChange, currentStep, setCurrentStep } : Ev
         if (!eventInfo.eventName) newErrors.eventName = 'Event name is required';
         if (!eventInfo.eventDate) newErrors.eventDate = 'Event date is required';
         if (!eventInfo.numOfParticipants) newErrors.numOfParticipants = 'Number of participants is required';
+        else if (parseInt(eventInfo.numOfParticipants) <= 0) newErrors.numOfParticipants = 'Number of participants must be more than 0'
         if (!eventInfo.location) newErrors.location = 'Location is required';
         if (!eventInfo.emailPoster) newErrors.emailPoster = 'Email or Poster is required';
         // if (!eventInfo.participantList) newErrors.participantList = 'Participant list is required'
@@ -109,6 +110,7 @@ const EventInfoForm = ({ eventInfo, onChange, currentStep, setCurrentStep } : Ev
                     label="Event poster or mass email"
                     id="emailPoster"
                     name="emailPoster"
+                    filename={eventInfo.emailPoster?.name}
                     onChange={handleFileChange}
                     isRequired={true}
                     error={errors.emailPoster}
@@ -119,6 +121,7 @@ const EventInfoForm = ({ eventInfo, onChange, currentStep, setCurrentStep } : Ev
                     description="*Except for compulsory events, such as High Table Dinner"
                     id="participantList"
                     name="participantList"
+                    filename={eventInfo.participantList?.name}
                     onChange={handleFileChange}
                     isRequired={false}
                     error={errors.participantList}

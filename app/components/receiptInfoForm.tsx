@@ -29,14 +29,18 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
     };
 
     const handleReceiptChange = (id: number, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const realValue = type === 'file' ? e.target.files?.[0] : value;
+
         onChange({
             ...receiptInfo,
             receipts: [
                 ...receiptInfo.receipts.map((receipt) => 
-                receipt.id === id ? ({ ...receipt, [name]: value}) : receipt)
+                receipt.receiptId === id ? ({ ...receipt, [name]: realValue}) : receipt)
             ],
         });
+
+        console.log(receiptInfo.receipts)
     };
 
     const addReceipt = () => {
@@ -45,7 +49,13 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
             ...receiptInfo,
             receipts: [
                 ...receiptInfo.receipts,
-                { id: newReceiptId, description: '', amount: ''},
+                { 
+                    receiptId: newReceiptId, 
+                    description: '', 
+                    amount: '', 
+                    paymentMethod: '', 
+                    copyOfReceipt: new File([], '') 
+                },
             ],
         });
     };
@@ -54,7 +64,7 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
         onChange({
             ...receiptInfo,
             receipts: receiptInfo.receipts
-                .filter((receipt) => receipt.id !== id)
+                .filter((receipt) => receipt.receiptId !== id)
                 .map((receipt, index) => ({ ...receipt, id: index + 1 }))
         })
     };
@@ -71,17 +81,18 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
         receiptInfo.receipts.forEach((receipt) => {
             const receiptError: Partial<Record<keyof Receipt, string>> = {};
             if (!receipt.description) receiptError.description = 'Description is required'
-            if (!receipt.amount) 
-                receiptError.amount = 'Amount is required'
+            if (!receipt.amount) receiptError.amount = 'Amount is required'
+            else if (parseInt(receipt.amount) <= 0) receiptError.amount = 'Amount must be more than 0'
             if (!receipt.paymentMethod) receiptError.paymentMethod = 'Payment method is required'
+            if (!receipt.copyOfReceipt) receiptError.copyOfReceipt = 'A copy of receipt is required'
 
             if (Object.keys(receiptError).length !== 0) {
-                newReceiptErrors[receipt.id] = receiptError;
+                newReceiptErrors[receipt.receiptId] = receiptError;
             }
         })
 
-        if (!receiptInfo.totalAmount) 
-            newInfoErrors.totalAmount = 'Total Amount is required'
+        if (!receiptInfo.totalAmount) newInfoErrors.totalAmount = 'Total Amount is required'
+        else if (parseInt(receiptInfo.totalAmount) <= 0) newInfoErrors.totalAmount = 'Total amount must be more than 0'
         if (receiptInfo.receipts.length === 0) newInfoErrors.receipts = 'At least one receipt is required'
 
         if (Object.keys(newInfoErrors).length === 0 && Object.keys(newReceiptErrors).length === 0) {
@@ -97,7 +108,7 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
             <hr className="mt-4 mb-4 border-t-2 border-gray-300" />
             <h2 className="text-xl font-bold mb-4 text-center">Receipts</h2>
             <InputTextBox
-                label="Total reimbursement amount"
+                label="Total reimbursement amount (in HKD)"
                 type="number"
                 id="totalAmount"
                 name="totalAmount"
@@ -111,9 +122,9 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
             <span className='flex text-red-500 text-xs'>{infoErrors.receipts}</span>
 
             {receiptInfo.receipts.map((receipt, index) => (
-            <div key={receipt.id} className="mb-4 p-4 border rounded-lg shadow-sm">
+            <div key={receipt.receiptId} className="mb-4 p-4 border rounded-lg shadow-sm">
                 <label className="block text-lg font-bold text-gray-700 mb-2">
-                    Receipt {receipt.id}
+                    Receipt {receipt.receiptId}
                 </label>
 
                 <InputTextBox
@@ -122,9 +133,9 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                     id="description"
                     name="description"
                     value={receiptInfo.receipts[index].description}
-                    onChange={e => handleReceiptChange(receipt.id, e)}
+                    onChange={e => handleReceiptChange(receipt.receiptId, e)}
                     isRequired={true}
-                    error={receiptErrors[receipt.id]?.description}
+                    error={receiptErrors[receipt.receiptId]?.description}
                 /> 
 
                 <InputSelectBox
@@ -132,7 +143,7 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                     id="paymentMethod"
                     name="paymentMethod"
                     value={receiptInfo.receipts[index].paymentMethod}
-                    onChange={e => handleReceiptChange(receipt.id, e)}
+                    onChange={e => handleReceiptChange(receipt.receiptId, e)}
                     isRequired={true}
                     options={[
                         { label: 'Cash', value: 'Cash' },
@@ -142,28 +153,29 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                         { label: 'Alipay', value: 'Alipay' },
                         { label: 'Wechat Pay', value: 'WechatPay' },
                     ]}
-                    error={receiptErrors[receipt.id]?.paymentMethod}
+                    error={receiptErrors[receipt.receiptId]?.paymentMethod}
                 />
                 <InputTextBox
-                    label="Amount"
+                    label="Amount (in HKD)"
                     type="number"
                     id="amount"
                     name="amount"
                     value={receiptInfo.receipts[index].amount}
-                    onChange={e => handleReceiptChange(receipt.id, e)}
+                    onChange={e => handleReceiptChange(receipt.receiptId, e)}
                     isRequired={true}
-                    error={receiptErrors[receipt.id]?.amount}
+                    error={receiptErrors[receipt.receiptId]?.amount}
                 />
                 <InputFileBox
                     label="A copy of receipt"
                     id="copyOfReceipt"
                     name="copyOfReceipt"
-                    onChange={e => handleReceiptChange(receipt.id, e)}
+                    filename={receiptInfo.receipts[index].copyOfReceipt?.name}
+                    onChange={e => handleReceiptChange(receipt.receiptId, e)}
                     isRequired={true}
-                    error={receiptErrors[receipt.id]?.copyOfReceipt}
+                    error={receiptErrors[receipt.receiptId]?.copyOfReceipt}
                 />
 
-                <button type="button" onClick={() => removeReceipt(receipt.id)} className="text-red-500 mt-2">
+                <button type="button" onClick={() => removeReceipt(receipt.receiptId)} className="text-red-500 mt-2">
                     Remove
                 </button>
             </div>
