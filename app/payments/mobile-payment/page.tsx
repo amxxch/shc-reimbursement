@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 import Image from 'next/image'
 import { FaFile } from 'react-icons/fa'
-import PaymentCard from '@/app/components/PaymentCard'
+import PaymentCard from '@/app/components/paymentCard'
 import { motion } from 'framer-motion'
 
 const MobileInfoPage = () => {

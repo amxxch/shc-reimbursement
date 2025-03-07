@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import Image from 'next/image'
-import PaymentCard from '@/app/components/PaymentCard'
+import PaymentCard from '@/app/components/paymentCard'
 import { motion } from 'framer-motion'
 
 const CashInfoPage = () => {

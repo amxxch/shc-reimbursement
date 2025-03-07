@@ -1,6 +1,6 @@
 'use client'
-import Steppers from "./components/Steppers";
-import PaymentOptions from "./components/PaymentOptions";
+import Steppers from "./components/steppers";
+import PaymentOptions from "./components/paymentOptions";
 import { useEffect } from "react";
 
 export default function Home() {

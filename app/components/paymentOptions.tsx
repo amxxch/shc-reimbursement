@@ -1,7 +1,7 @@
 'use client'
 
 import Image from "next/image";
-import PaymentCard from "./PaymentCard";
+import PaymentCard from "./paymentCard";
 
 const PaymentOptions = () => {
     const paymentMethods = [

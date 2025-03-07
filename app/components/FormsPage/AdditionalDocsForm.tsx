@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react';
-import InputFileBox from '../inputBox/InputFileBox';
+import InputFileBox from '../inputBox/inputFileBox';
 import { ReceiptInfo } from '../../types';
-import FormButton from '../FormButton';
+import FormButton from '../formButton';
 
 interface ReceiptInfoProps {
     receiptInfo: ReceiptInfo;

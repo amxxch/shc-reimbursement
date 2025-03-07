@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react';
-import InputTextBox from '../inputBox/InputTextBox';
-import InputFileBox from '../inputBox/InputFileBox';
-import InputSelectBox from '../inputBox/InputSelectBox';
+import InputTextBox from '../inputBox/inputTextBox';
+import InputFileBox from '../inputBox/inputFileBox';
+import InputSelectBox from '../inputBox/inputSelectBox';
 import { ReceiptInfo, Receipt } from '../../types';
-import FormButton from '../FormButton';
+import FormButton from '../formButton';
 
 interface ReceiptInfoProps {
     receiptInfo: ReceiptInfo;

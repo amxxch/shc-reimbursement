@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import InputTextBox from '../inputBox/InputTextBox';
+import InputTextBox from '../inputBox/inputTextBox';
 import { ClaimantInfo } from '../../types';
-import FormButton from '../FormButton';
+import FormButton from '../formButton';
 
 interface ClaimantInfoProps {
     claimantInfo: ClaimantInfo;
