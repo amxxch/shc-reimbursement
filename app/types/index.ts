@@ -26,8 +26,14 @@ interface Receipt {
     description: string;
     paymentMethod: string;
     amount: string;
-    copyOfReceipt?: File;
+    copyOfReceipt: File;
     additionalDocs?: Record<string, File>;
+}
+
+interface AdditionalDocs {
+    docId: number;
+    docType: string;
+    file: File;
 }
 
 interface ReimbursementRequest {

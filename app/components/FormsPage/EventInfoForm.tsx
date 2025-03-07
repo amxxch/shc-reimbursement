@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react';
-import InputTextBox from './inputTextBox';
-import InputFileBox from './inputFileBox';
-import { EventInfo } from '../types';
-import FormButton from './formButton';
+import InputTextBox from '../inputBox/InputTextBox';
+import InputFileBox from '../inputBox/InputFileBox';
+import { EventInfo } from '../../types';
+import FormButton from '../FormButton';
 
 interface EventInfoProps {
     eventInfo: EventInfo;
@@ -110,6 +110,7 @@ const EventInfoForm = ({ eventInfo, setEventInfo, currentStep, setCurrentStep } 
                     label="Event poster or mass email"
                     id="emailPoster"
                     name="emailPoster"
+                    description={"*Please name the file as (Event Name)_emailPoster"}
                     filename={eventInfo.emailPoster?.name}
                     onChange={handleFileChange}
                     isRequired={true}
@@ -118,7 +119,12 @@ const EventInfoForm = ({ eventInfo, setEventInfo, currentStep, setCurrentStep } 
 
                 <InputFileBox
                     label="Participant list"
-                    description="*Except for compulsory events, such as High Table Dinner"
+                    description={
+                        <>
+                        *Except for compulsory events, such as High Table Dinner<br />
+                        *Please name the file as (Event Name)_participantList
+                        </>
+                    }
                     id="participantList"
                     name="participantList"
                     filename={eventInfo.participantList?.name}

@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import InputTextBox from './inputTextBox';
-import InputFileBox from './inputFileBox';
-import InputSelectBox from './inputSelectBox';
-import { ReceiptInfo, Receipt } from '../types';
-import FormButton from './formButton';
+import { useState } from 'react';
+import InputTextBox from '../inputBox/InputTextBox';
+import InputFileBox from '../inputBox/InputFileBox';
+import InputSelectBox from '../inputBox/InputSelectBox';
+import { ReceiptInfo, Receipt } from '../../types';
+import FormButton from '../FormButton';
 
 interface ReceiptInfoProps {
     receiptInfo: ReceiptInfo;
@@ -40,7 +40,6 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
             ],
         });
 
-        console.log(receiptInfo.receipts)
     };
 
     const addReceipt = () => {
@@ -149,9 +148,11 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                         { label: 'Cash', value: 'Cash' },
                         { label: 'Octopus', value: 'Octopus' },
                         { label: 'Debit / Credit Card', value: 'Card' },
-                        { label: 'Apple Pay', value: 'ApplePay' },
-                        { label: 'Alipay', value: 'Alipay' },
-                        { label: 'Wechat Pay', value: 'WechatPay' },
+                        { label: 'Mobile Payment Services (with card)', value: 'MobileWithCard' },
+                        { label: 'Mobile Payment Services (with balance)', value: 'MobileWithBalance' },
+                        { label: 'Online Purchases', value: 'OnlinePurchases' },
+                        { label: 'TaoBao using cash/octopus', value: 'TaoBaoWithCO' },
+                        { label: 'TaoBao using payments other than cash/octopus', value: 'TaoBaoWithoutCO' },
                     ]}
                     error={receiptErrors[receipt.receiptId]?.paymentMethod}
                 />
@@ -169,6 +170,7 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                     label="A copy of receipt"
                     id="copyOfReceipt"
                     name="copyOfReceipt"
+                    description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}`}
                     filename={receiptInfo.receipts[index].copyOfReceipt?.name}
                     onChange={e => handleReceiptChange(receipt.receiptId, e)}
                     isRequired={true}

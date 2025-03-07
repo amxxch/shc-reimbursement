@@ -1,5 +1,4 @@
 import prisma from "@/prisma/client";
-import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
@@ -10,43 +9,22 @@ const s3Client = new S3Client({
       accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
     },
-  });
+});
 
-export async function POST(req: NextRequest, res: NextApiResponse) {
+interface ReceiptDto {
+    description: string;
+    paymentMethod: string;
+    amount: number;
+    copyOfReceipt: string;
+    additionalDocs: Record<string, string>;
+}
 
-    const uploadFile = async (file: File): Promise<string> => {
-        const bucketName = process.env.AWS_S3_BUCKET_NAME;
-        if (!bucketName) throw new Error('AWS_S3_BUCKET_NAME is not defined');
-
-        const fileBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(fileBuffer);
-        
-        const params = {
-            Bucket: bucketName,
-            Key: `uploads/${file.name}`,
-            Body: buffer,
-            ContentType: file.type,
-            ACL: 'public-read' as 'public-read',
-        };
-        try {
-            const upload = new Upload({
-              client: s3Client,
-              params,
-            });
-        
-        const result = await upload.done();
-        if (!result.Location) throw new Error('Upload did not return a location');
-        return result.Location;
-        
-        } catch (error) {
-            console.error('Failed to upload file:', error);
-            throw new Error('Failed to upload file');
-        }
-    };
+export async function POST(req: NextRequest) {
 
     try {
         const formData = await req.formData();
 
+        // Create a new reimbursement request
         const emailPosterFile = formData.get('emailPoster') as File;
         const emailPosterUrl = await uploadFile(emailPosterFile);
 
@@ -71,13 +49,76 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
             total_amount: parseFloat(formData.get('totalAmount') as string),
         }
 
-        // data validation
+        // Create receipts
+        let index = 0;
+        const receipts: ReceiptDto[] = [];
+        while (formData.has(`receipts[${index}][description]`)) {
+            const receipt = {
+                description: formData.get(`receipts[${index}][description]`) as string,
+                paymentMethod: formData.get(`receipts[${index}][paymentMethod]`) as string,
+                amount: parseFloat(formData.get(`receipts[${index}][amount]`) as string),
+            }
 
-        const newRequest = await prisma.reimbursement_Request.create({
-            data: reimbursementRequest
-        })
+            const copyOfReceiptFile = formData.get(`receipts[${index}][copyOfReceipt]`) as File;
+            const copyOfReceiptUrl = await uploadFile(copyOfReceiptFile);
 
-        return NextResponse.json({ message: newRequest }, { status: 201 })
+            const additionalDocs: Record<string, string> = {};
+            let additionalDocsIndex = 0;
+            while (formData.has(`receipts[${index}][additionalDocs][${additionalDocsIndex}][file]`)) {
+                console.log('has additional docs at index', additionalDocsIndex);
+                const additionalDocFile = formData.get(`receipts[${index}][additionalDocs][${additionalDocsIndex}][file]`) as File;
+                const additionalDocType = formData.get(`receipts[${index}][additionalDocs][${additionalDocsIndex}][doc_type]`) as string;
+                const additionalDocUrl = await uploadFile(additionalDocFile);
+                additionalDocs[additionalDocType] = additionalDocUrl;
+                additionalDocsIndex++;
+            }
+
+            receipts.push({
+                ...receipt,
+                copyOfReceipt: copyOfReceiptUrl,
+                additionalDocs,
+            });
+            index++;
+        }
+
+        console.log(receipts);
+
+        // Data Validation (To be implemented)
+
+        // Create a prisma transaction
+        const result = await prisma.$transaction(async (tx) => {
+            // Create a new reimbursement request to the database
+            const newRequest = await tx.reimbursement_Request.create({
+                data: reimbursementRequest
+            });
+
+            for (const receipt of receipts) {
+                // Create a new receipt to the database
+                const newReceipt = await tx.receipt.create({
+                    data: {
+                        request_id: newRequest.request_id,
+                        payment_method: receipt.paymentMethod,
+                        description: receipt.description,
+                        amount: receipt.amount,
+                        copyOfReceipt: receipt.copyOfReceipt,
+                    }
+                });
+
+                // Create additional documents for the receipt
+                for (const [docType, url] of Object.entries(receipt.additionalDocs)) {
+                    await tx.additional_Documents.create({
+                        data: {
+                            receipt_id: newReceipt.receipt_id,
+                            doc_type: docType,
+                            file_path: url as string,
+                        }
+                    });
+                }
+            }
+            return { requestId : newRequest.request_id };
+        });
+
+        return NextResponse.json(result, { status: 201 })
 
     } catch (error) {
         console.error('Server error:', error);
@@ -85,3 +126,33 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
     }
 }
 
+// Upload a file to AWS S3 Cloud Storage
+const uploadFile = async (file: File): Promise<string> => {
+    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+    if (!bucketName) throw new Error('AWS_S3_BUCKET_NAME is not defined');
+
+    const fileBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(fileBuffer);
+    
+    const params = {
+        Bucket: bucketName,
+        Key: `uploads/${file.name}`,
+        Body: buffer,
+        ContentType: file.type,
+        ACL: 'public-read' as 'public-read',
+    };
+    try {
+        const upload = new Upload({
+          client: s3Client,
+          params,
+        });
+    
+        const result = await upload.done();
+        if (!result.Location) throw new Error('Upload did not return a location');
+        return result.Location;
+    
+    } catch (error) {
+        console.error('Failed to upload file:', error);
+        throw new Error('Failed to upload file');
+    }
+};

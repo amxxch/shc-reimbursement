@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { ReactNode } from 'react'
 
 interface Props {
   label: string;
-  description?: string;
+  description?: string | ReactNode;
   id: string;
   name: string;
   filename?: string;

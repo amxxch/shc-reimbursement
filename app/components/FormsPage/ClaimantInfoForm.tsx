@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react';
-import InputTextBox from './inputTextBox';
-import { ClaimantInfo } from '../types';
-import { FaArrowRight } from 'react-icons/fa';
-import FormButton from './formButton';
+import { useEffect, useState } from 'react';
+import InputTextBox from '../inputBox/InputTextBox';
+import { ClaimantInfo } from '../../types';
+import FormButton from '../FormButton';
 
 interface ClaimantInfoProps {
     claimantInfo: ClaimantInfo;
@@ -16,6 +15,10 @@ interface ClaimantInfoProps {
 const ClaimantInfoForm = ({ claimantInfo, onChange, currentStep, setCurrentStep } : ClaimantInfoProps) => {
 
     const [errors, setErrors] = useState<Partial<ClaimantInfo>>({});
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      });
 
     const handleClaimantInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

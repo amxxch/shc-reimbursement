@@ -36,8 +36,10 @@ model Reimbursement_Request {
 model Receipt {
   receipt_id      Int                    @id @default(autoincrement())
   request_id      Int
+  description     String
   payment_method  String
   amount          Float
+  copyOfReceipt   String
   reimbursement   Reimbursement_Request  @relation("Request_Receipt", fields: [request_id], references: [request_id])
   additional_docs Additional_Documents[] @relation("Receipt_Additional_Documents")
 }
@@ -48,4 +50,12 @@ model Additional_Documents {
   doc_type   String
   file_path  String
   receipt    Receipt @relation("Receipt_Additional_Documents", fields: [receipt_id], references: [receipt_id])
+}
+
+model Contact_Person {
+  contact_id   Int    @id @default(autoincrement())
+  first_name   String
+  last_name    String
+  email        String
+  phone_number String
 }

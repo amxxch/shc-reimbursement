@@ -21,11 +21,11 @@ const NavBar = () => {
             sub: [
                 {
                     name: 'Octopus',
-                    href: '/payments/octopus'
+                    href: '/payments/cash-octopus'
                 },
                 {
                     name: 'Cash',
-                    href: '/payments/cash'
+                    href: '/payments/cash-octopus'
                 },
                 {
                     name: 'Credit / Debit Card',
@@ -33,15 +33,27 @@ const NavBar = () => {
                 },
                 {
                     name: 'Apple Pay',
-                    href: '/payments/apple_pay'
+                    href: '/payments/mobile-payment'
                 },
                 {
                     name: 'Alipay',
-                    href: '/payments/alipay'
+                    href: '/payments/mobile-payment'
                 },
                 {
                     name: 'Wechat Pay',
-                    href: '/payments/wechat_pay'
+                    href: '/payments/mobile-payment'
+                },
+                {
+                    name: 'PayMe',
+                    href: '/payments/mobile-payment'
+                },
+                {
+                    name: 'Online Purchases',
+                    href: '/payments/online-purchase'
+                },
+                {
+                    name: 'TaoBao',
+                    href: '/payments/taobao'
                 },
             ]
         }
