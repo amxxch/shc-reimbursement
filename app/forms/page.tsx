@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ClaimantInfo, EventInfo, ReceiptInfo } from '../types';
-import ClaimantInfoForm from '../components/FormsPage/claimantInfoForm';
-import EventInfoForm from '../components/FormsPage/eventInfoForm';
-import ReceiptInfoForm from '../components/FormsPage/receiptInfoForm';
-import AdditionalDocsForm from '../components/FormsPage/additionalDocsForm';
+import ClaimantInfoForm from '../components/FormsPage/ClaimantInfoForm';
+import EventInfoForm from '../components/FormsPage/EventInfoForm';
+import ReceiptInfoForm from '../components/FormsPage/ReceiptInfoForm';
+import AdditionalDocsForm from '../components/FormsPage/AdditionalDocsForm';
 // import Steppers from '../components/Steppers';
 import { useRouter } from 'next/navigation';
 import CircularProgress from '@mui/material/CircularProgress';
