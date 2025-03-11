@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/prisma/client';
 
-export async function GET (req: NextRequest, { params }: { params: { id: string }}) {
+export async function GET (req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params;
 
-        console.log(params)
         const reimbursementRequest = await prisma.reimbursement_Request.findUnique({
-            where: { request_id: parseInt(params.id) },
+            where: { request_id: parseInt(id) },
             include: {
                 receipts: {
                     include: {
