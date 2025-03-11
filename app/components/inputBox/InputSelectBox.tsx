@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 interface Props {
   label: string;
   description?: string;
@@ -14,7 +14,6 @@ interface Props {
 }
 
 const InputSelectBox = ({ label, description, id, name, value, onChange, isRequired, options, error}: Props) => {
-  const [selectMethod, setSelectedMethod] = useState('');
   return (
     <div className="mb-4">
       <label htmlFor={id} className="block text-md font-medium text-gray-700">
