@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+// import { useState } from 'react';
 import InputFileBox from '../inputBox/InputFileBox';
 import { ReceiptInfo } from '../../types';
 import FormButton from '../formButton';
@@ -15,7 +15,7 @@ interface ReceiptInfoProps {
 
 const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep, handleSubmit } : ReceiptInfoProps) => {
 
-    const [errors, setErrors] = useState<Partial<ReceiptInfo>>({});
+    // const [errors, setErrors] = useState<Partial<ReceiptInfo>>({});
 
     const handleDocumentChange = (receiptId: number, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -48,8 +48,6 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
 
         if (Object.keys(newErrors).length === 0) {
             alert('Form submitted successfully');
-        } else {
-            setErrors(newErrors);
         }
     };
 

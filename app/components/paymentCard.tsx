@@ -1,13 +1,12 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Url } from 'url'
 
 interface PaymentCardProps {
-    icon: any,
+    icon: React.ReactNode,
     name: string,
     description: string,
-    href?: Url | string,
+    href?: string,
     isDownload?: boolean,
     onClick?: () => void
 }

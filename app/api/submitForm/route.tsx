@@ -1,6 +1,6 @@
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client } from '@aws-sdk/client-s3';
+import { ObjectCannedACL, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 
 const s3Client = new S3Client({
@@ -139,7 +139,7 @@ const uploadFile = async (file: File): Promise<string> => {
         Key: `uploads/${file.name}`,
         Body: buffer,
         ContentType: file.type,
-        ACL: 'public-read' as 'public-read',
+        ACL: 'public-read' as ObjectCannedACL,
     };
     try {
         const upload = new Upload({

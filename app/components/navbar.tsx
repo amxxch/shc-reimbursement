@@ -1,13 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faBars } from '@fortawesome/free-solid-svg-icons'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
 
 const NavBar = () => {
     // handle drop down when small screen later
-    const [dropdownOpen, setDropdownOpen] = useState(true);
+    const [dropdownOpen] = useState(true);
 
     const navItem = [
         {

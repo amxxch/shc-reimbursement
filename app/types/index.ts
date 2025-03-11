@@ -30,12 +30,6 @@ interface Receipt {
     additionalDocs?: Record<string, File>;
 }
 
-interface AdditionalDocs {
-    docId: number;
-    docType: string;
-    file: File;
-}
-
 interface ReimbursementRequest {
     claimantInfo: ClaimantInfo;
     eventInfo: EventInfo;

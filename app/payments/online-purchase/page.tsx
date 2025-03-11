@@ -68,7 +68,7 @@ const MobileInfoPage = () => {
                     icon={doc.icon} 
                     name={doc.name} 
                     description={doc.description} 
-                    href={doc.href ? doc.href : null}
+                    href={doc.href ? doc.href : ''}
                     isDownload={doc.isDownload ? doc.isDownload : false}
                     onClick={() => navigateToSamples(`${doc.name.toLowerCase()}-samples`)}
                   />
