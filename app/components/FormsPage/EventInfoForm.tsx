@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react';
-import InputTextBox from '../inputBox/inputTextBox';
-import InputFileBox from '../inputBox/inputFileBox';
+import InputTextBox from '../inputBox/InputTextBox';
+import InputFileBox from '../inputBox/InputFileBox';
 import { EventInfo } from '../../types';
 import FormButton from '../formButton';
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import InputTextBox from '../inputBox/inputTextBox';
+import InputTextBox from '../inputBox/InputTextBox';
 import { ClaimantInfo } from '../../types';
 import FormButton from '../formButton';
 
