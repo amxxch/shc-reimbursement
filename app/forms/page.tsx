@@ -70,25 +70,30 @@ const FormsPage = () => {
         if (eventInfo.committee) requestData.append('committee', eventInfo.committee);
         requestData.append('numOfParticipants', eventInfo.numOfParticipants);
         requestData.append('location', eventInfo.location);
-        requestData.append('emailPoster', eventInfo.emailPoster);
-        if (eventInfo.participantList) requestData.append('participantList', eventInfo.participantList);
+        const emailPosterUrl = await handleFileUpload(eventInfo.emailPoster);
+        requestData.append('emailPoster', emailPosterUrl);
+        if (eventInfo.participantList.size > 0) {
+            const participantListUrl = await handleFileUpload(eventInfo.participantList);
+            requestData.append('participantList', participantListUrl);
+        }
         requestData.append('totalAmount', receiptInfo.totalAmount);
 
-        console.log(eventInfo.emailPoster)
-
-        receiptInfo.receipts.forEach((receipt, index) => {
+        for (let index = 0; index < receiptInfo.receipts.length; index++) {
+            const receipt = receiptInfo.receipts[index];
             requestData.append(`receipts[${index}][description]`, receipt.description);
             requestData.append(`receipts[${index}][paymentMethod]`, receipt.paymentMethod);
             requestData.append(`receipts[${index}][amount]`, receipt.amount);
-            requestData.append(`receipts[${index}][copyOfReceipt]`, receipt.copyOfReceipt);
-
+    
+            const copyOfReceiptUrl = await handleFileUpload(receipt.copyOfReceipt);
+            requestData.append(`receipts[${index}][copyOfReceipt]`, copyOfReceiptUrl);
+    
             if (receipt.additionalDocs) {
-                Object.entries(receipt.additionalDocs).forEach(([key, file], docIndex) => {
-                    requestData.append(`receipts[${index}][additionalDocs][${docIndex}][doc_type]`, key);
-                    requestData.append(`receipts[${index}][additionalDocs][${docIndex}][file]`, file);
-                });
+                for (const [key, file] of Object.entries(receipt.additionalDocs)) {
+                    const additionalDocUrl = await handleFileUpload(file);
+                    requestData.append(`receipts[${index}][additionalDocs][${key}]`, additionalDocUrl);
+                }
             }
-        });
+        }
 
         try {
             const response = await fetch('/api/submitForm', {
@@ -108,6 +113,37 @@ const FormsPage = () => {
             router.push('/forms/error');
         }
     };
+
+    const handleFileUpload = async (file: File) => {
+        try {
+            const response = await fetch('/api/getPresignedUrl', {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    fileName: file.name,
+                    fileType: file.type,
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        
+            if (!response.ok) throw new Error('Failed to get pre-signed URL');
+            const { url, location } = await response.json();
+        
+            const uploadResponse = await fetch(url, {
+                method: 'PUT',
+                body: file,
+                headers: {
+                    'Content-Type': file.type,
+                },
+            });
+        
+            if (!uploadResponse.ok) throw new Error('Failed to upload file');
+            return location;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };    
 
     return (
         <div className="flex justify-center min-h-screen">

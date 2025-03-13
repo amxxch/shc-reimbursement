@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import InputTextBox from '../inputBox/InputTextBox';
 import { ClaimantInfo } from '../../types';
 import FormButton from '../formButton';
@@ -15,10 +15,6 @@ interface ClaimantInfoProps {
 const ClaimantInfoForm = ({ claimantInfo, onChange, currentStep, setCurrentStep } : ClaimantInfoProps) => {
 
     const [errors, setErrors] = useState<Partial<ClaimantInfo>>({});
-
-    useEffect(() => {
-        window.scrollTo(0, 0);
-      });
 
     const handleClaimantInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
