@@ -86,13 +86,21 @@ const FormsPage = () => {
     
             const copyOfReceiptUrl = await handleFileUpload(receipt.copyOfReceipt);
             requestData.append(`receipts[${index}][copyOfReceipt]`, copyOfReceiptUrl);
-    
+
             if (receipt.additionalDocs) {
+                let docIndex = 0;
                 for (const [key, file] of Object.entries(receipt.additionalDocs)) {
+                    requestData.append(`receipts[${index}][additionalDocs][${docIndex}][doc_type]`, key);
                     const additionalDocUrl = await handleFileUpload(file);
-                    requestData.append(`receipts[${index}][additionalDocs][${key}]`, additionalDocUrl);
+                    requestData.append(`receipts[${index}][additionalDocs][${docIndex}][file]`, additionalDocUrl);
+                    docIndex++;
                 }
             }
+        }
+
+        // console.log formData
+        for (const [key, value] of requestData.entries()) {
+            console.log(key, value);
         }
 
         try {
