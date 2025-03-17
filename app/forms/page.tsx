@@ -98,11 +98,6 @@ const FormsPage = () => {
             }
         }
 
-        // console.log formData
-        for (const [key, value] of requestData.entries()) {
-            console.log(key, value);
-        }
-
         try {
             const response = await fetch('/api/submitForm', {
                 method: 'POST',

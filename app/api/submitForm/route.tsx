@@ -12,7 +12,6 @@ interface ReceiptDto {
 export async function POST(req: NextRequest) {
 
     try {
-        console.log('Received a new reimbursement request');
         const formData = await req.formData();
 
         // Create a new reimbursement request
@@ -47,7 +46,6 @@ export async function POST(req: NextRequest) {
             const additionalDocs: Record<string, string> = {};
             let additionalDocsIndex = 0;
             while (formData.has(`receipts[${index}][additionalDocs][${additionalDocsIndex}][file]`)) {
-                console.log('has additional docs at index', additionalDocsIndex);
                 const additionalDocUrl = formData.get(`receipts[${index}][additionalDocs][${additionalDocsIndex}][file]`) as string;
                 const additionalDocType = formData.get(`receipts[${index}][additionalDocs][${additionalDocsIndex}][doc_type]`) as string;
                 additionalDocs[additionalDocType] = additionalDocUrl;
