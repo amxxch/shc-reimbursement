@@ -2,7 +2,6 @@
 
 import React, { useEffect } from 'react'
 import Image from 'next/image'
-import { FaFile } from 'react-icons/fa'
 import PaymentCard from '@/app/components/paymentCard'
 import { motion } from 'framer-motion'
 
@@ -14,26 +13,14 @@ const MobileInfoPage = () => {
           description: 'Original Receipts', 
         },
         { 
-          icon: <FaFile />, 
-          name: 'Declaration Form', 
-          description: 'Click to download', 
-          href: '/forms/declaration-form.pdf',
-          isDownload: true
+          icon: '🚚', 
+          name: 'Delivery Note', 
+          description: 'A screenshot of delivery status being shown as “completed” or “delivered”', 
         },
         { 
-          icon: '🧾', 
-          name: 'Transaction History', 
-          description: 'A screenshot of transaction history (Pay with balance only) ', 
-        },
-        { 
-          icon: '🧾', 
-          name: 'Transaction History', 
-          description: 'A screenshot of transaction history (Pay with balance only) ', 
-        },
-        { 
-          icon: '🧾', 
-          name: 'Transaction History', 
-          description: 'A screenshot of transaction history (Pay with balance only) ', 
+          icon: <Image src="/images/taobao-logo.png" width={35} height={50} alt="Taobao"/>, 
+          name: 'Transaction Record', 
+          description: 'A screenshot of transaction record (TaoBao Only) ', 
         },
     ]
 
@@ -68,21 +55,42 @@ const MobileInfoPage = () => {
                     icon={doc.icon} 
                     name={doc.name} 
                     description={doc.description} 
-                    href={doc.href ? doc.href : ''}
-                    isDownload={doc.isDownload ? doc.isDownload : false}
-                    onClick={() => navigateToSamples(`${doc.name.toLowerCase()}-samples`)}
+                    onClick={() => navigateToSamples(`${doc.name.toLowerCase().replace(' ', '-')}-samples`)}
                   />
               ))}
           </div>
 
           <h1 className='mt-20 text-sky-800'>Examples of Acceptable Documents</h1>
           <div id='receipts-samples'>
-            <h2 className='text-2xl'>Receipts</h2>
+            <h2 className='text-2xl'>Acceptable Receipts</h2>
             <div className="grid md:grid-cols-2 gap-4 p-4 justify-center">
               <Image src="/images/acceptable-receipt-1.png" width={500} height={500} alt="Receipts" />
               <Image src="/images/acceptable-receipt-2.png" width={500} height={500} alt="Receipts" />
             </div>
+
+            <h2 className='text-2xl mt-5'>Unacceptable Receipts</h2>
+            <div className="grid md:grid-cols-2 gap-4 p-4 justify-center">
+              <Image src="/images/unacceptable-receipt-1.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-2.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-3.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-4.png" width={500} height={500} alt="Receipts" />
+            </div>
           </div>
+
+          <div id='transaction-record-samples'>
+            <h2 className='text-2xl my-5'>TaoBao transaction</h2>
+            <div className='flex justify-center'>
+              <Image className="flex justify-center" src="/images/taobao-receipt.png" width={500} height={500} alt="Delivery Note" />
+            </div>
+          </div>
+
+          <div id='delivery-note-samples'>
+            <h2 className='text-2xl my-5'>Examples of Delivery Note</h2>
+            <div className='flex justify-center'>
+              <Image className="flex justify-center" src="/images/taobao-delivery-note.png" width={500} height={500} alt="Delivery Note" />
+            </div>
+          </div>
+
         </motion.div>
       </main>
     )

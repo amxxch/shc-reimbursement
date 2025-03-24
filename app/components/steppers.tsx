@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from "framer-motion";
 import { Steps } from '../types';
 
 interface StepperProps {
-    steps: Steps[]
+    steps: Steps[],
+    activeStep: number,
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const Steppers = ({steps} : StepperProps) => {
-    const [activeStep, setActiveStep] = useState(0);
+const Steppers = ({steps, activeStep, setActiveStep } : StepperProps) => {
 
     return (
         <div>

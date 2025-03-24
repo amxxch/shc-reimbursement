@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
         const { fileName, fileType } = await req.json();
         const command = new PutObjectCommand({
             Bucket: bucketName,
-            Key: `uploads/${fileName}`,
+            Key: `new/${fileName}`,
             ContentType: fileType,
             ACL: 'public-read' as ObjectCannedACL,
         });

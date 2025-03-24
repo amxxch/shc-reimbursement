@@ -53,6 +53,14 @@ const CashInfoPage = () => {
             <Image src="/images/acceptable-receipt-1.png" width={500} height={500} alt="Receipts" />
             <Image src="/images/acceptable-receipt-2.png" width={500} height={500} alt="Receipts" />
           </div>
+
+          <h2 className='text-2xl mt-5'>Unacceptable Receipts</h2>
+            <div className="grid md:grid-cols-2 gap-4 p-4 justify-center">
+              <Image src="/images/unacceptable-receipt-1.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-2.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-3.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-4.png" width={500} height={500} alt="Receipts" />
+            </div>
         </div>
       </motion.div>
     </main>

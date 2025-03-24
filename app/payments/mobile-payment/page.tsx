@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import Image from 'next/image'
-import { FaFile } from 'react-icons/fa'
+import { FaFile, FaHistory } from 'react-icons/fa'
 import PaymentCard from '@/app/components/paymentCard'
 import { motion } from 'framer-motion'
 
@@ -21,19 +21,19 @@ const MobileInfoPage = () => {
           isDownload: true
         },
         { 
-          icon: '🧾', 
+          icon: <FaHistory />, 
           name: 'Transaction History', 
-          description: 'A screenshot of transaction history (Pay with balance only) ', 
+          description: 'A screenshot of transaction history (For payment with card only)', 
+        },
+        { 
+          icon: '💳', 
+          name: 'Card Photo', 
+          description: 'Card photo with the name of the card holder on the card (For payment with card only)', 
         },
         { 
           icon: '🧾', 
-          name: 'Transaction History', 
-          description: 'A screenshot of transaction history (Pay with balance only) ', 
-        },
-        { 
-          icon: '🧾', 
-          name: 'Transaction History', 
-          description: 'A screenshot of transaction history (Pay with balance only) ', 
+          name: 'Transaction Receipt', 
+          description: 'A screenshot of transaction history (For payment with balance only) ', 
         },
     ]
 
@@ -70,17 +70,42 @@ const MobileInfoPage = () => {
                     description={doc.description} 
                     href={doc.href ? doc.href : ''}
                     isDownload={doc.isDownload ? doc.isDownload : false}
-                    onClick={() => navigateToSamples(`${doc.name.toLowerCase()}-samples`)}
+                    onClick={() => navigateToSamples(`${doc.name.toLowerCase().replace(' ', '-')}-samples`)}
                   />
               ))}
           </div>
 
           <h1 className='mt-20 text-sky-800'>Examples of Acceptable Documents</h1>
+
           <div id='receipts-samples'>
             <h2 className='text-2xl'>Receipts</h2>
             <div className="grid md:grid-cols-2 gap-4 p-4 justify-center">
               <Image src="/images/acceptable-receipt-1.png" width={500} height={500} alt="Receipts" />
               <Image src="/images/acceptable-receipt-2.png" width={500} height={500} alt="Receipts" />
+            </div>
+            
+            <h2 className='text-2xl mt-5'>Unacceptable Receipts</h2>
+            <div className="grid md:grid-cols-2 gap-4 p-4 justify-center">
+              <Image src="/images/unacceptable-receipt-1.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-2.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-3.png" width={500} height={500} alt="Receipts" />
+              <Image src="/images/unacceptable-receipt-4.png" width={500} height={500} alt="Receipts" />
+            </div>
+          </div>
+
+          <div id='transaction-history-samples' className='my-10'>
+            <h2 id='card-photo-samples' className='text-2xl'>Transaction History and Card Photo</h2>
+            <h2 className='text-2xl mb-5'>(For payment with card)</h2>
+            <div className='flex justify-center'>
+              <Image className="flex justify-center" src="/images/card-transaction.png" width={500} height={500} alt="Transaction History" />
+            </div>
+          </div>
+
+          <div id='transaction-receipt-samples' className='my-10'>
+            <h2 className='text-2xl'>Transaction Receipt</h2>
+            <h2 className='text-2xl mb-5'>(For payment with balance)</h2>
+            <div className='flex justify-center'>
+              <Image className="flex justify-center" src="/images/transaction-receipt.png" width={500} height={500} alt="Transaction Receipt" />
             </div>
           </div>
         </motion.div>
