@@ -181,41 +181,18 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                         </div>
                     }
 
-                    {receipt.paymentMethod === 'TaoBaoWithCO' &&
+                    {receipt.paymentMethod === 'TaoBao' &&
                         <div>
                             <InputFileBox
-                                label="A screenshot of the order status shown as 'Delivered' or 'Completed'"
-                                id="orderStatus"
-                                name="orderStatus"
-                                description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_orderStatus`}
+                                label="Delivery Note with delivery status shown as 'Delivered' or 'Completed'"
+                                id="deliveryNote"
+                                name="deliveryNote"
+                                description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_deliveryNote`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
                             />
-
                             <InputFileBox
-                                label="A screenshot of Transaction Record"
-                                id="transactionRecord"
-                                name="transactionRecord"
-                                description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_transactionRecord`}
-                                onChange={e => handleDocumentChange(receipt.receiptId, e)}
-                                isRequired={true}
-                            />
-                        </div>
-                    }
-
-                    {receipt.paymentMethod === 'TaoBaoWithoutCO' &&
-                        <div>
-                            <InputFileBox
-                                label="A screenshot of the order status shown as 'Delivered' or 'Completed'"
-                                id="orderStatus"
-                                name="orderStatus"
-                                description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_orderStatus`}
-                                onChange={e => handleDocumentChange(receipt.receiptId, e)}
-                                isRequired={true}
-                            />
-
-                            <InputFileBox
-                                label="A screenshot of Transaction Record"
+                                label="Transaction Record"
                                 id="transactionRecord"
                                 name="transactionRecord"
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_transactionRecord`}

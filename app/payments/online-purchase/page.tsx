@@ -44,7 +44,7 @@ const MobileInfoPage = () => {
                   transition={{ duration: 0.5 }}
         >
           <h1 className="text-5xl font-bold pt-5">Online Purchases</h1>
-          <p className="text-xl my-5">Including Apple Pay, AliPay, Wechat Pay, and PayMe</p>
+          <p className="text-xl my-5">Including TaoBao, etc.</p>
 
           <hr className="border-2 border-gray-300 my-5" />
           <h1 className='text-sky-800 mt-10'>Required Documents</h1>

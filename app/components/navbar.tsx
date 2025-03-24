@@ -51,10 +51,6 @@ const NavBar = () => {
                     name: 'Online Purchases',
                     href: '/payments/online-purchase'
                 },
-                {
-                    name: 'TaoBao',
-                    href: '/payments/taobao'
-                },
             ]
         }
     ]

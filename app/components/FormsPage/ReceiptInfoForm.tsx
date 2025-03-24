@@ -150,9 +150,8 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                         { label: 'Debit / Credit Card', value: 'Card' },
                         { label: 'Mobile Payment Services (with card)', value: 'MobileWithCard' },
                         { label: 'Mobile Payment Services (with balance)', value: 'MobileWithBalance' },
-                        { label: 'Online Purchases', value: 'OnlinePurchases' },
-                        { label: 'TaoBao using cash/octopus', value: 'TaoBaoWithCO' },
-                        { label: 'TaoBao using payments other than cash/octopus', value: 'TaoBaoWithoutCO' },
+                        { label: 'Online Purchases except TaoBao', value: 'OnlinePurchases' },
+                        { label: 'TaoBao', value: 'TaoBao' },
                     ]}
                     error={receiptErrors[receipt.receiptId]?.paymentMethod}
                 />
