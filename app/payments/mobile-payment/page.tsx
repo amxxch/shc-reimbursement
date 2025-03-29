@@ -78,7 +78,7 @@ const MobileInfoPage = () => {
           <h1 className='mt-20 text-sky-800'>Examples of Acceptable Documents</h1>
 
           <div id='receipts-samples'>
-            <h2 className='text-2xl'>Receipts</h2>
+            <h2 className='text-2xl'>Acceptable Receipts</h2>
             <div className="grid md:grid-cols-2 gap-4 p-4 justify-center">
               <Image src="/images/acceptable-receipt-1.png" width={500} height={500} alt="Receipts" />
               <Image src="/images/acceptable-receipt-2.png" width={500} height={500} alt="Receipts" />

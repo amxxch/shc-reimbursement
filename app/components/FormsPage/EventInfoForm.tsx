@@ -15,11 +15,25 @@ interface EventInfoProps {
 
 const EventInfoForm = ({ eventInfo, setEventInfo, currentStep, setCurrentStep } : EventInfoProps) => {
 
+    // Maximum file size is 5MB
+    const MAX_FILE_SIZE = 5 * 1000 * 1000;
+
     const [errors, setErrors] = useState<Partial<Record<keyof EventInfo, string>>>({});
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name
         const file = e.target.files?.[0];
+
+        if (file) {
+            setErrors(prev => {
+                const newErrors = {...prev};
+                if (newErrors[name as keyof EventInfo]) {
+                    delete newErrors[name as keyof EventInfo];
+                }
+                return newErrors;
+            });
+        }
+
         setEventInfo({ ...eventInfo, [name]: file });
     };
 
@@ -39,8 +53,9 @@ const EventInfoForm = ({ eventInfo, setEventInfo, currentStep, setCurrentStep } 
         if (!eventInfo.numOfParticipants) newErrors.numOfParticipants = 'Number of participants is required';
         else if (parseInt(eventInfo.numOfParticipants) <= 0) newErrors.numOfParticipants = 'Number of participants must be more than 0'
         if (!eventInfo.location) newErrors.location = 'Location is required';
-        if (!eventInfo.emailPoster) newErrors.emailPoster = 'Email or Poster is required';
-        // if (!eventInfo.participantList) newErrors.participantList = 'Participant list is required'
+        if (!eventInfo.emailPoster || eventInfo.emailPoster.size === 0) newErrors.emailPoster = 'Email poster is required';
+        else if (eventInfo.emailPoster.size > MAX_FILE_SIZE) newErrors.emailPoster = 'File size must be less than 5MB';
+        // if (!eventInfo.participantList || eventInfo.participantList.size === 0) newErrors.participantList = 'Participant list is required';
 
         // add more validation logic (maybe to phone number, staff no.)
 

@@ -1,6 +1,7 @@
 'use client'
 
-// import { useState } from 'react';
+import { useState } from 'react';
+import Image from 'next/image';
 import InputFileBox from '../inputBox/InputFileBox';
 import { ReceiptInfo } from '../../types';
 import FormButton from '../formButton';
@@ -15,7 +16,10 @@ interface ReceiptInfoProps {
 
 const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep, handleSubmit } : ReceiptInfoProps) => {
 
-    // const [errors, setErrors] = useState<Partial<ReceiptInfo>>({});
+    // Maximum file size is 5MB
+    const MAX_FILE_SIZE = 5 * 1000 * 1000;
+
+    const [errors, setErrors] = useState<Record<number, Record<string, string>>>({});
 
     const handleDocumentChange = (receiptId: number, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -36,18 +40,75 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
             ],
         });
 
+        // Clear error when file is selected
+        if (type === 'file' && rawFile) {
+            setErrors(prev => {
+                const newErrors = {...prev};
+                if (newErrors[receiptId]?.[name]) {
+                    delete newErrors[receiptId][name];
+                    if (Object.keys(newErrors[receiptId]).length === 0) {
+                        delete newErrors[receiptId];
+                    }
+                }
+                return newErrors;
+            });
+        }
+
+    };
+
+    const getRequiredFilesForMethod = (method: string) => {
+        switch(method) {
+            case 'Card':
+                return ['transactionHistory', 'bankCard'];
+            case 'MobileWithCard':
+                return ['declarationForm', 'transactionHistory', 'bankCard'];
+            case 'MobileWithBalance':
+                return ['declarationForm', 'transactionHistory'];
+            case 'OnlinePurchases':
+                return ['deliveryNote'];
+            case 'TaoBao':
+                return ['deliveryNote', 'transactionRecord'];
+            default:
+                return [];
+        }
+    };
+
+    const validateForm = () => {
+        const newErrors: Record<number, Record<string, string>> = {};
+
+        receiptInfo.receipts.forEach(receipt => {
+            if (receipt.paymentMethod === 'Cash' || receipt.paymentMethod === 'Octopus') {
+                return;
+            }
+
+            const requiredFiles = getRequiredFilesForMethod(receipt.paymentMethod);
+            const receiptErrors: Record<string, string> = {};
+
+            requiredFiles.forEach(fileKey => {
+                if (!receipt.additionalDocs?.[fileKey] || 
+                    (receipt.additionalDocs[fileKey] instanceof File && 
+                     receipt.additionalDocs[fileKey].size === 0)) {
+                    receiptErrors[fileKey] = 'This file is required';
+                } else if (receipt.additionalDocs[fileKey].size > MAX_FILE_SIZE) {
+                    receiptErrors[fileKey] = 'File size must be less than 5MB';
+                }
+            });
+
+            if (Object.keys(receiptErrors).length > 0) {
+                newErrors[receipt.receiptId] = receiptErrors;
+            }
+        });
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleNext = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Simple validation logic
-        const newErrors: Partial<ReceiptInfo> = {};
-
-        // add more validation logic (maybe to phone number, staff no.)
-
-        if (Object.keys(newErrors).length === 0) {
-            alert('Form submitted successfully');
+        const isValid = validateForm();
+        if (isValid) {
+            handleSubmit(e);
         }
     };
 
@@ -99,18 +160,22 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 label="Bank Statement / Screenshot of Transaction History"
                                 id="transactionHistory"
                                 name="transactionHistory"
+                                filename={receipt.additionalDocs?.transactionHistory?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_transactionHistory`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.transactionHistory}
                             />
 
                             <InputFileBox
                                 label="A copy of Bank Card with cardholder's name"
                                 id="bankCard"
                                 name="bankCard"
+                                filename={receipt.additionalDocs?.bankCard?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_bankCard`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.bankCard}
                             />
                         </div>
                     }
@@ -121,27 +186,33 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 label="Declaration Form"
                                 id="declarationForm"
                                 name="declarationForm"
+                                filename={receipt.additionalDocs?.declarationForm?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_declarationForm`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.declarationForm}
                             />
 
                             <InputFileBox
                                 label="Transaction History with bank account number"
                                 id="transactionHistory"
                                 name="transactionHistory"
+                                filename={receipt.additionalDocs?.transactionHistory?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_bankCard`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.transactionHistory}
                             />
 
                             <InputFileBox
                                 label="A copy of Bank Card with cardholder's name"
                                 id="bankCard"
                                 name="bankCard"
+                                filename={receipt.additionalDocs?.bankCard?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_bankCard`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.bankCard}
                             />
                         </div>
                     }
@@ -152,18 +223,22 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 label="Declaration Form"
                                 id="declarationForm"
                                 name="declarationForm"
+                                filename={receipt.additionalDocs?.declarationForm?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_declarationForm`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.declarationForm}
                             />
 
                             <InputFileBox
                                 label="A screenshot of Transaction History"
                                 id="transactionHistory"
                                 name="transactionHistory"
+                                filename={receipt.additionalDocs?.transactionHistory?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_transactionHistory`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.transactionHistory}
                             />
                         </div>
                     }
@@ -174,9 +249,11 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 label="Delivery Note with delivery status shown as 'Delivered' or 'Completed'"
                                 id="deliveryNote"
                                 name="deliveryNote"
+                                filename={receipt.additionalDocs?.deliveryNote?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_deliveryNote`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.deliveryNote}
                             />
                         </div>
                     }
@@ -187,18 +264,25 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 label="Delivery Note with delivery status shown as 'Delivered' or 'Completed'"
                                 id="deliveryNote"
                                 name="deliveryNote"
+                                filename={receipt.additionalDocs?.deliveryNote?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_deliveryNote`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.deliveryNote}
                             />
                             <InputFileBox
                                 label="Transaction Record"
                                 id="transactionRecord"
                                 name="transactionRecord"
+                                filename={receipt.additionalDocs?.transactionRecord?.name}
                                 description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_transactionRecord`}
                                 onChange={e => handleDocumentChange(receipt.receiptId, e)}
                                 isRequired={true}
+                                error={errors[receipt.receiptId]?.transactionRecord}
                             />
+                            <div className='flex justify-center'>
+                                <Image className="flex justify-center" src="/images/taobao-receipt.png" width={500} height={500} alt="Delivery Note" />
+                            </div>
                         </div>
                     }
 
@@ -207,7 +291,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
             <FormButton 
                 currentStep={currentStep} 
                 setCurrentStep={setCurrentStep} 
-                handleSubmit={handleSubmit}
+                handleSubmit={handleNext}
             />
         </form>
     );

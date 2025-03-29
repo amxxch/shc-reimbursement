@@ -18,6 +18,7 @@ const InputSelectBox = ({ label, description, id, name, value, onChange, isRequi
     <div className="mb-4">
       <label htmlFor={id} className="block text-md font-medium text-gray-700">
         {label}
+        {isRequired && <span className="text-red-500"> *</span>}
       </label>
       <label htmlFor={id} className="block mt-1 text-sm text-gray-600">{description}</label>
 

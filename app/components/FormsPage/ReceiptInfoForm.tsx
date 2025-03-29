@@ -14,14 +14,13 @@ interface ReceiptInfoProps {
     setCurrentStep: (n: number) => void;
 }
 
-interface ReceiptErrors {
-    [key: string]: Partial<Record<keyof Receipt, string>>;
-}
-
 const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } : ReceiptInfoProps) => {
 
+    // Maximum file size is 5MB
+    const MAX_FILE_SIZE = 5 * 1000 * 1000;
+
     const [infoErrors, setInfoErrors] = useState<Partial<Record<keyof ReceiptInfo, string>>>({});
-    const [receiptErrors, setReceiptErrors] = useState<ReceiptErrors>({});
+    const [receiptErrors, setReceiptErrors] = useState<Record<number, Record<string, string>>>({});;
 
     const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -30,15 +29,28 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
 
     const handleReceiptChange = (id: number, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value, type } = e.target;
-        const realValue = type === 'file' ? e.target.files?.[0] : value;
+        const rawFile = type === 'file' ? e.target.files?.[0] : value;
 
         onChange({
             ...receiptInfo,
             receipts: [
                 ...receiptInfo.receipts.map((receipt) => 
-                receipt.receiptId === id ? ({ ...receipt, [name]: realValue}) : receipt)
+                receipt.receiptId === id ? ({ ...receipt, [name]: rawFile}) : receipt)
             ],
         });
+
+        if (type === 'file' && rawFile) {
+            setReceiptErrors(prev => {
+                const newErrors = {...prev};
+                if (newErrors[id]?.[name as keyof Receipt]) {
+                    delete newErrors[id][name as keyof Receipt];
+                    if (Object.keys(newErrors[id]).length === 0) {
+                        delete newErrors[id];
+                    }
+                }
+                return newErrors;
+            });
+        }
 
     };
 
@@ -71,28 +83,37 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
     const handleNextStep = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // add checking if total amount === sum of each receipt
-
         // Simple validation logic
         const newInfoErrors: Partial<Record<keyof ReceiptInfo, string>> = {};
-        const newReceiptErrors: ReceiptErrors = {};
+        const newReceiptErrors: Record<number, Record<string, string>> = {};
+
+        const sumAmount = receiptInfo.receipts.reduce((sum, receipt) => {
+            return sum + (parseInt(receipt.amount) || 0);
+        }, 0);
+        const totalAmount = parseInt(receiptInfo.totalAmount) || 0;
+
+        if (!receiptInfo.totalAmount) newInfoErrors.totalAmount = 'Total Amount is required'
+        else if (parseInt(receiptInfo.totalAmount) <= 0) newInfoErrors.totalAmount = 'Total amount must be more than 0'
+        else if (sumAmount !== totalAmount) newInfoErrors.totalAmount = 'Total amount must be equal to sum of each receipt'
+
+        if (receiptInfo.receipts.length === 0) newInfoErrors.receipts = 'At least one receipt is required'
         
         receiptInfo.receipts.forEach((receipt) => {
             const receiptError: Partial<Record<keyof Receipt, string>> = {};
+
             if (!receipt.description) receiptError.description = 'Description is required'
             if (!receipt.amount) receiptError.amount = 'Amount is required'
             else if (parseInt(receipt.amount) <= 0) receiptError.amount = 'Amount must be more than 0'
             if (!receipt.paymentMethod) receiptError.paymentMethod = 'Payment method is required'
-            if (!receipt.copyOfReceipt) receiptError.copyOfReceipt = 'A copy of receipt is required'
+
+            if (!receipt.copyOfReceipt || receipt.copyOfReceipt.size === 0) receiptError.copyOfReceipt = 'A copy of receipt is required'
+            else if (receipt.copyOfReceipt.size > MAX_FILE_SIZE) receiptError.copyOfReceipt = 'File size must be less than 5MB'
 
             if (Object.keys(receiptError).length !== 0) {
                 newReceiptErrors[receipt.receiptId] = receiptError;
             }
         })
 
-        if (!receiptInfo.totalAmount) newInfoErrors.totalAmount = 'Total Amount is required'
-        else if (parseInt(receiptInfo.totalAmount) <= 0) newInfoErrors.totalAmount = 'Total amount must be more than 0'
-        if (receiptInfo.receipts.length === 0) newInfoErrors.receipts = 'At least one receipt is required'
 
         if (Object.keys(newInfoErrors).length === 0 && Object.keys(newReceiptErrors).length === 0) {
             setCurrentStep(currentStep + 1)

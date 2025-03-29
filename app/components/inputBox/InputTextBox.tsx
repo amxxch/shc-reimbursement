@@ -15,7 +15,10 @@ interface Props {
 const InputTextBox = ({ label, description, type, id, name, value, onChange, isRequired, error}: Props) => {
   return (
     <div className="mb-4">
-      <label htmlFor={id} className="block text-md font-medium text-gray-700">{label}</label>
+      <label htmlFor={id} className="block text-md font-medium text-gray-700">
+        {label}
+        {isRequired && <span className="text-red-500"> *</span>}
+      </label>
       <label htmlFor={id} className="block mt-1 text-sm text-gray-600">{description}</label>
       <input
           type={type}
