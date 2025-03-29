@@ -261,7 +261,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                     {receipt.paymentMethod === 'TaoBao' &&
                         <div>
                             <InputFileBox
-                                label="Delivery Note with delivery status shown as 'Delivered' or 'Completed'"
+                                label="Delivery Note with delivery status shown as 'Delivered' or 'Completed'. 显示了付款成功的页面截图，需要包含付款时间和实付款金额。"
                                 id="deliveryNote"
                                 name="deliveryNote"
                                 filename={receipt.additionalDocs?.deliveryNote?.name}
@@ -271,7 +271,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 error={errors[receipt.receiptId]?.deliveryNote}
                             />
                             <InputFileBox
-                                label="Transaction Record"
+                                label="Transaction Record。显示“已签收”的交货单。"
                                 id="transactionRecord"
                                 name="transactionRecord"
                                 filename={receipt.additionalDocs?.transactionRecord?.name}
