@@ -76,7 +76,12 @@ const FormsPage = () => {
             const participantListUrl = await handleFileUpload(eventInfo.participantList);
             requestData.append('participantList', participantListUrl);
         }
+
         requestData.append('totalAmount', receiptInfo.totalAmount);
+        if (receiptInfo.authorizationLetter && receiptInfo.authorizationLetter.size > 0) {
+            const authorizationLetterUrl = await handleFileUpload(receiptInfo.authorizationLetter);
+            requestData.append('authorizationLetter', authorizationLetterUrl);
+        }
 
         for (let index = 0; index < receiptInfo.receipts.length; index++) {
             const receipt = receiptInfo.receipts[index];
@@ -84,8 +89,10 @@ const FormsPage = () => {
             requestData.append(`receipts[${index}][paymentMethod]`, receipt.paymentMethod);
             requestData.append(`receipts[${index}][amount]`, receipt.amount);
     
-            const copyOfReceiptUrl = await handleFileUpload(receipt.copyOfReceipt);
-            requestData.append(`receipts[${index}][copyOfReceipt]`, copyOfReceiptUrl);
+            if (receipt.copyOfReceipt.size > 0) {
+                const copyOfReceiptUrl = await handleFileUpload(receipt.copyOfReceipt);
+                requestData.append(`receipts[${index}][copyOfReceipt]`, copyOfReceiptUrl);
+            }
 
             if (receipt.additionalDocs) {
                 let docIndex = 0;

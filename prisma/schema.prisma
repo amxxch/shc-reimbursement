@@ -22,7 +22,7 @@ model Reimbursement_Request {
   total_amount         Float
   email_poster         String
   participant_list     String?
-  authorizaion_letter  String?
+  authorization_letter String?
   submission_date      DateTime  @default(now())
   status               String    @default("Pending")
   receipts             Receipt[] @relation("Request_Receipt")
@@ -33,9 +33,8 @@ model Receipt {
   request_id      Int
   description     String
   payment_method  String
-  purchase_type   String?
   amount          Float
-  copyOfReceipt   String
+  copyOfReceipt   String?
   additional_docs Additional_Documents[] @relation("Receipt_Additional_Documents")
   reimbursement   Reimbursement_Request  @relation("Request_Receipt", fields: [request_id], references: [request_id])
 

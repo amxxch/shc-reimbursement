@@ -99,7 +99,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
         if (type === 'file' && rawFile) {
             setErrors(prev => {
                 const newErrors = {...prev};
-                if (newErrors[0][name]) {
+                if (newErrors[0]?.[name]) {
                     delete newErrors[0][name];
                 }
                 return newErrors;

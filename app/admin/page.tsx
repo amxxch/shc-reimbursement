@@ -41,6 +41,7 @@ interface ReimbursementRequestDto {
     total_amount: number;
     email_poster: string;
     participant_list: null | string; 
+    authorization_letter: null | string;
     submission_date: Date | string; // Can be parsed to Date object
     status: "Pending" | "Approved" | "Rejected" | string;
     receipts: ReceiptDto[];
@@ -331,19 +332,18 @@ export default function AdminPage() {
                         <div>
                             <h3 className="text-sm font-medium text-gray-500">Multiple Payers Authorization Letter</h3>
                             
-                            {/* {(request.participant_list && request.participant_list !== 'undefined') ? (
+                            {(request.authorization_letter && request.authorization_letter !== 'undefined') ? (
                             <div className="mt-2">
                                 <ViewFileButton
                                     key='participant_list'
-                                    href={request.participant_list ? request.participant_list : ''}
+                                    href={request.authorization_letter ? request.authorization_letter : ''}
                                     color="blue"
-                                    text="View Participant List"
+                                    text="View Authorization Letter"
                                 />
                             </div>
                             ) : (
                             <p className="mt-1">N/A</p>
-                            )} */}
-                            <p className="mt-1">N/A</p>
+                            )}
                         </div>
                     </div>
                   
@@ -352,16 +352,22 @@ export default function AdminPage() {
                     {request.receipts.map((receipt) => (
                       <div key={receipt.receipt_id} className="p-4 border border-gray-200 rounded-lg">
                         <div className="flex justify-between items-start mb-3">
-                                <h4 className="font-medium">{receipt.description}</h4>
+                            <h4 className="font-medium">{receipt.description}</h4>
+                            { receipt.copyOfReceipt && 
                             <ViewFileButton
-                                key={receipt.receipt_id}
-                                href={receipt.copyOfReceipt}
-                                color="blue"
-                                text="View Receipt"
+                            key={receipt.receipt_id}
+                            href={receipt.copyOfReceipt}
+                            color="blue"
+                            text="View Receipt"
                             />
+                            }
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-500">Description</h3>
+                                <p className="mt-1">{receipt.description}</p>
+                            </div>
                             <div>
                                 <h3 className="text-sm font-medium text-gray-500">Amount</h3>
                                 <p className="mt-1">HK${receipt.amount.toFixed(2)}</p>

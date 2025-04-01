@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         if (acceptHeader?.includes('text/html')) {
             return new NextResponse('API access only', { status: 403 });
         }
-        
+
         const formData = await req.formData();
 
         // Create a new reimbursement request
@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
             email_poster: formData.get('emailPoster') as string,
             participant_list: formData.get('participantList') as string,
             total_amount: parseFloat(formData.get('totalAmount') as string),
+            authorization_letter: formData.get('authorizationLetter') as string || null,
         }
 
         // Create receipts
@@ -80,11 +81,16 @@ export async function POST(req: NextRequest) {
                 // Create a new receipt to the database
                 const newReceipt = await tx.receipt.create({
                     data: {
-                        request_id: newRequest.request_id,
+                        reimbursement: {
+                            connect: { request_id: newRequest.request_id }
+                        },
+                        // request_id: newRequest.request_id,
                         payment_method: receipt.paymentMethod,
                         description: receipt.description,
                         amount: receipt.amount,
                         copyOfReceipt: receipt.copyOfReceipt,
+
+                        additional_docs: undefined,
                     }
                 });
 
@@ -100,6 +106,9 @@ export async function POST(req: NextRequest) {
                 }
             }
             return { requestId : newRequest.request_id };
+        }, {
+            maxWait: 30000,
+            timeout: 60000,
         });
 
         return NextResponse.json(result, { status: 201 })

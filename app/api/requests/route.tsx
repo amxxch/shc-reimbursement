@@ -19,6 +19,7 @@ export async function GET (req: NextRequest) {
             }
         });
 
+
         return NextResponse.json(reimbursementRequests, { status: 200 });
     } catch (error) {
         console.error('Server error:', error);
