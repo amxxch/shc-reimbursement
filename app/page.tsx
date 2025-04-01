@@ -7,9 +7,9 @@ import ReceiptsReminder from "./components/receiptsReminder";
 
 export default function Home() {
   const reimbursementSteps = [
-    { label: 'Step 1', description: 'Make Payment in your preferred forms', remark: 'Always keep the original receipts'},
-    { label: 'Step 1.5', description: 'During the purchase, please keep all original receipts', remark: 'Failure to do so will not be able to do reimbursement' },
-    { label: 'Step 2', description: 'Fill in reimbursement forms and upload relevant materials', remark: 'Within 1 week after the event' },
+    { label: 'Step 1', description: 'BEFORE you make a purchase: Please read carefully the documents that need to be submitted for different payment methods before choosing one to purchase. We strongly recommend that you choose cash, Octopus or physical credit card transactions, which are the easist ways to get reimbursed.', remark: ''},
+    { label: 'Step 1.5', description: 'DURING purchase: Please keep all original receipts and ensure they are ACCEPTABLE', remark: 'Failure to do so will not be able to do reimbursement' },
+    { label: 'Step 2', description: 'AFTER the purchase: Fill in reimbursement forms and upload REQUIRED MATERIALS (as stipulated in step)', remark: 'Within 1 week after the event' },
     { label: 'Step 3', description: 'Submit the original receipts in one batch to the general office', remark: 'Submit as soon as possible to the general office on the 4th floor' },
     // { label: 'Step 4', description: 'Sign authorization letter', remark: 'If an individual serves as the claimant on the payers\' behalf' },
   ];
