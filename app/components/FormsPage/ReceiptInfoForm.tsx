@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import InputTextBox from '../inputBox/InputTextBox';
-import InputFileBox from '../inputBox/InputFileBox';
 import InputSelectBox from '../inputBox/InputSelectBox';
 import { ReceiptInfo, Receipt } from '../../types';
 import FormButton from '../formButton';
@@ -16,13 +15,10 @@ interface ReceiptInfoProps {
 
 const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } : ReceiptInfoProps) => {
 
-    // Maximum file size is 5MB
-    const MAX_FILE_SIZE = 5 * 1000 * 1000;
-
     const [infoErrors, setInfoErrors] = useState<Partial<Record<keyof ReceiptInfo, string>>>({});
     const [receiptErrors, setReceiptErrors] = useState<Record<number, Record<string, string>>>({});;
 
-    const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
         onChange({ ...receiptInfo, [name]: value });
     };
@@ -95,6 +91,7 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
         if (!receiptInfo.totalAmount) newInfoErrors.totalAmount = 'Total Amount is required'
         else if (parseInt(receiptInfo.totalAmount) <= 0) newInfoErrors.totalAmount = 'Total amount must be more than 0'
         else if (sumAmount !== totalAmount) newInfoErrors.totalAmount = 'Total amount must be equal to sum of each receipt'
+        if (!receiptInfo.isMultiplePayers) newInfoErrors.isMultiplePayers = 'Please select if there are multiple payers'
 
         if (receiptInfo.receipts.length === 0) newInfoErrors.receipts = 'At least one receipt is required'
         
@@ -105,9 +102,10 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
             if (!receipt.amount) receiptError.amount = 'Amount is required'
             else if (parseInt(receipt.amount) <= 0) receiptError.amount = 'Amount must be more than 0'
             if (!receipt.paymentMethod) receiptError.paymentMethod = 'Payment method is required'
+            if (!receipt.purchaseType) receiptError.purchaseType = 'Purchase type is required'
 
-            if (!receipt.copyOfReceipt || receipt.copyOfReceipt.size === 0) receiptError.copyOfReceipt = 'A copy of receipt is required'
-            else if (receipt.copyOfReceipt.size > MAX_FILE_SIZE) receiptError.copyOfReceipt = 'File size must be less than 5MB'
+            // if (!receipt.copyOfReceipt || receipt.copyOfReceipt.size === 0) receiptError.copyOfReceipt = 'A copy of receipt is required'
+            // else if (receipt.copyOfReceipt.size > MAX_FILE_SIZE) receiptError.copyOfReceipt = 'File size must be less than 5MB'
 
             if (Object.keys(receiptError).length !== 0) {
                 newReceiptErrors[receipt.receiptId] = receiptError;
@@ -136,6 +134,20 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                 onChange={handleInfoChange}
                 isRequired={true}
                 error={infoErrors.totalAmount}
+            />
+
+            <InputSelectBox
+                label="Are there multiple payers?"
+                id="isMultiplePayers"
+                name="isMultiplePayers"
+                value={receiptInfo.isMultiplePayers}
+                onChange={handleInfoChange}
+                isRequired={true}
+                options={[
+                    { label: 'Yes', value: 'Y' },
+                    { label: 'No', value: 'N' },
+                ]}
+                error={infoErrors.isMultiplePayers}
             />
 
             <button className='flex btn mb-4' onClick={addReceipt}>+ Add new receipt</button>
@@ -169,13 +181,32 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                         { label: 'Cash', value: 'Cash' },
                         { label: 'Octopus', value: 'Octopus' },
                         { label: 'Debit / Credit Card', value: 'Card' },
-                        { label: 'Mobile Payment Services (with card)', value: 'MobileWithCard' },
-                        { label: 'Mobile Payment Services (with balance)', value: 'MobileWithBalance' },
-                        { label: 'Online Purchases except TaoBao', value: 'OnlinePurchases' },
+                        { label: 'Mobile Payment Services (With Card)', value: 'MobileWithCard' },
+                        { label: 'Mobile Payment Services (With Balance)', value: 'MobileWithBalance' },
+                        { label: 'Online Purchases Except TaoBao', value: 'OnlinePurchases' },
                         { label: 'TaoBao', value: 'TaoBao' },
                     ]}
                     error={receiptErrors[receipt.receiptId]?.paymentMethod}
                 />
+
+                <InputSelectBox
+                    label="Types of Purchases"
+                    id="purchaseType"
+                    name="purchaseType"
+                    value={receiptInfo.receipts[index].purchaseType}
+                    onChange={e => handleReceiptChange(receipt.receiptId, e)}
+                    isRequired={true}
+                    options={[
+                        { label: 'Normal Purchase', value: 'Normal' },
+                        { label: 'Transportation with Receipt', value: 'TransportationWithReceipt' },
+                        { label: 'Transportation without Receipt', value: 'TransportationWithoutReceipt' },
+                        { label: 'Meals With details of food items in receipt', value: 'MealsNotNeedMenu' },
+                        { label: 'Meals Without details of food items in receipt', value: 'MealsNeedMenu' },
+                        { label: 'Gifts', value: 'Gifts' },
+                    ]}
+                    error={receiptErrors[receipt.receiptId]?.purchaseType}
+                />
+
                 <InputTextBox
                     label="Amount (in HKD)"
                     type="number"
@@ -186,7 +217,8 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                     isRequired={true}
                     error={receiptErrors[receipt.receiptId]?.amount}
                 />
-                <InputFileBox
+
+                {/* <InputFileBox
                     label="A copy of receipt"
                     id="copyOfReceipt"
                     name="copyOfReceipt"
@@ -195,7 +227,7 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
                     onChange={e => handleReceiptChange(receipt.receiptId, e)}
                     isRequired={true}
                     error={receiptErrors[receipt.receiptId]?.copyOfReceipt}
-                />
+                /> */}
 
                 <button type="button" onClick={() => removeReceipt(receipt.receiptId)} className="text-red-500 mt-2">
                     Remove

@@ -18,6 +18,8 @@ interface EventInfo {
 
 interface ReceiptInfo {
     totalAmount: string;
+    isMultiplePayers?: string;
+    authorizationLetter?: File;
     receipts: Receipt[];
 }
 
@@ -25,6 +27,7 @@ interface Receipt {
     receiptId: number;
     description: string;
     paymentMethod: string;
+    purchaseType?: string;
     amount: string;
     copyOfReceipt: File;
     additionalDocs?: Record<string, File>;

@@ -51,6 +51,22 @@ const NavBar = () => {
                     name: 'Online Purchases',
                     href: '/payments/online-purchase'
                 },
+                { 
+                    name: "Multiple Payers", 
+                    href: "/payments/multiple-payers" 
+                },
+                { 
+                    name: "Transportation",  
+                    href: "/payments/transportation" 
+                },
+                { 
+                    name: "Meals",  
+                    href: "/payments/meals" 
+                },
+                { 
+                    name: "Gifts", 
+                    href: "/payments/gifts" 
+                },
             ]
         }
     ]
@@ -71,8 +87,8 @@ const NavBar = () => {
                     <li key={index}>
                         {item.sub.length > 0 ? (
                             <details>
-                                <summary>{item.name}</summary>
-                                <ul className="bg-base-100 rounded-t-none p-2">
+                                <summary className='px-7'>{item.name}</summary>
+                                <ul className="bg-base-100 rounded-t-none p-1">
                                     {item.sub.map((subItem, subIndex) => (
                                         <li key={subIndex}>
                                             <Link href={subItem.href}>{subItem.name}</Link>

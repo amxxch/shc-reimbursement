@@ -38,6 +38,33 @@ const PaymentOptions = () => {
         },
     ];
 
+    const specialBillTypes = [
+        { 
+            name: "Multiple Payers", 
+            description: "Purchases by multiple payers", 
+            icon: "👥", 
+            href: "/payments/multiple-payers" 
+        },
+        { 
+            name: "Transportation Purchases", 
+            description: "Payments for transportation", 
+            icon: "🚘", 
+            href: "/payments/transportation" 
+        },
+        { 
+            name: "Meals Purchases", 
+            description: "Payments for meals", 
+            icon: "🍽️", 
+            href: "/payments/meals" 
+        },
+        { 
+            name: "Gifts Purchases", 
+            description: "Gifts, Gift Certificates, Award, Prizes, Souvenirs", 
+            icon: "🎁", 
+            href: "/payments/gifts" 
+        },
+    ];
+
     return (
         <div className="flex justify-center min-h-screen">
             <motion.div className="flex flex-col items-center p-6" 
@@ -49,6 +76,21 @@ const PaymentOptions = () => {
                 <p className="text-lg font-medium text-gray-600 mb-4">Please click to read all required documents for each payment method before making a purchase</p>
                 <div className="grid md:grid-cols-3 gap-4 p-4 justify-center">
                     {paymentMethods.map((method, index) => (
+                        <PaymentCard 
+                            key={index} 
+                            icon={method.icon} 
+                            name={method.name} 
+                            description={method.description}
+                            href={method.href} 
+                        />
+                    ))}
+                </div>
+
+                <br />
+                <h1 className="text-1xl font-bold mt-10 mb-5">Special Purchase Types</h1>
+                <p className="text-lg font-medium text-gray-600">If your purchases are in these categories, you will need to provide additional documents on top of the required ones based on your payment methods.</p>
+                <div className="grid md:grid-cols-3 gap-4 p-4 justify-center">
+                    {specialBillTypes.map((method, index) => (
                         <PaymentCard 
                             key={index} 
                             icon={method.icon} 

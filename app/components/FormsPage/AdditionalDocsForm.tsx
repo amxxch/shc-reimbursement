@@ -56,6 +56,57 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
 
     };
 
+    const handleReceiptCopyChange = (receiptId: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type } = e.target;
+        const rawFile = type === 'file' ? e.target.files?.[0] : value;
+
+        onChange({
+            ...receiptInfo,
+            receipts: [
+                ...receiptInfo.receipts.map((receipt) => 
+                receipt.receiptId === receiptId ? ({ 
+                    ...receipt, 
+                    [name]: rawFile
+                }) 
+                : receipt
+                )
+            ],
+        });
+
+        if (type === 'file' && rawFile) {
+            setErrors(prev => {
+                const newErrors = {...prev};
+                if (newErrors[receiptId]?.[name]) {
+                    delete newErrors[receiptId][name];
+                    if (Object.keys(newErrors[receiptId]).length === 0) {
+                        delete newErrors[receiptId];
+                    }
+                }
+                return newErrors;
+            });
+        }
+    }
+
+    const handleMultiplePayersChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type } = e.target;
+        const rawFile = type === 'file' ? e.target.files?.[0] : value;
+
+        onChange({
+            ...receiptInfo,
+            authorizationLetter: rawFile as File
+        });
+
+        if (type === 'file' && rawFile) {
+            setErrors(prev => {
+                const newErrors = {...prev};
+                if (newErrors[0][name]) {
+                    delete newErrors[0][name];
+                }
+                return newErrors;
+            });
+        }
+    }
+
     const getRequiredFilesForMethod = (method: string) => {
         switch(method) {
             case 'Card':
@@ -73,17 +124,45 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
         }
     };
 
+    const getRequiredFilesForPurchaseType = (purchaseType: string | undefined) => {
+        switch(purchaseType) {
+            case 'TransportationWithReceipt':
+                return ['transportationReport'];
+            case 'TransportationWithoutReceipt':
+                return ['transportationReport', 'transportationExpensesForm'];
+            case 'MealsNeedMenu':
+                return ['menu'];
+            case 'Gifts':
+                return ['giftAcknowledgement'];
+            default:
+                return [];
+        }
+    }
+
     const validateForm = () => {
         const newErrors: Record<number, Record<string, string>> = {};
 
-        receiptInfo.receipts.forEach(receipt => {
-            if (receipt.paymentMethod === 'Cash' || receipt.paymentMethod === 'Octopus') {
-                return;
-            }
+        if (receiptInfo.isMultiplePayers === 'Y' && 
+            (!receiptInfo.authorizationLetter || receiptInfo.authorizationLetter.size === 0)) {
+            newErrors[0] = { 
+                ...newErrors[0],
+                authorizationLetter: 'This file is required'
+        }
+        }
 
-            const requiredFiles = getRequiredFilesForMethod(receipt.paymentMethod);
+        receiptInfo.receipts.forEach(receipt => {
+            
+            const requiredFiles = [
+                ...getRequiredFilesForMethod(receipt.paymentMethod), 
+                ...getRequiredFilesForPurchaseType(receipt.purchaseType)
+            ];
             const receiptErrors: Record<string, string> = {};
 
+            if (receipt.purchaseType !== 'TransportationWithoutReceipt') {
+                if (!receipt.copyOfReceipt || receipt.copyOfReceipt.size === 0) receiptErrors.copyOfReceipt = 'This file is required'
+                else if (receipt.copyOfReceipt.size > MAX_FILE_SIZE) receiptErrors.copyOfReceipt = 'File size must be less than 5MB'
+            }
+            
             requiredFiles.forEach(fileKey => {
                 if (!receipt.additionalDocs?.[fileKey] || 
                     (receipt.additionalDocs[fileKey] instanceof File && 
@@ -100,6 +179,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
         });
 
         setErrors(newErrors);
+        console.log(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
@@ -116,18 +196,45 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
         Cash: 'Cash',
         Octopus: 'Octopus',
         Card: 'Debit / Credit Card',
-        MobileWithCard: 'Mobile Payment Services (with card)',
-        MobileWithBalance: 'Mobile Payment Services (with balance)',
+        MobileWithCard: 'Mobile Payment Services (With Card)',
+        MobileWithBalance: 'Mobile Payment Services (With Balance)',
         OnlinePurchases: 'Online Purchases',
         TaoBaoWithCO: 'TaoBao using cash/octopus',
         TaoBaoWithoutCO: 'TaoBao using payments other than cash/octopus',
     }
     type paymentMethodsKeys = keyof typeof paymentMethodNames;
 
+    const purchaseTypeNames = {
+        Normal: 'Normal',
+        TransportationWithReceipt: 'Transportation with receipt',
+        TransportationWithoutReceipt: 'Transportation without receipt',
+        MealsNeedMenu: 'Meals Without details of food items in receipt',
+        MealsNotNeedMenu: 'Meals With details of food items in receipt',
+        Gifts: 'Gifts',
+    }
+    type purchaseTypeKeys = keyof typeof purchaseTypeNames;
+
     return (
         <form onSubmit={ handleNext }>
             <hr className="mt-4 mb-4 border-t-2 border-gray-300" />
                 <h2 className="text-xl font-bold mb-4 text-center">Additional Documents</h2>
+                { receiptInfo.isMultiplePayers === 'Y' && 
+                <div className="mb-4 p-4 border rounded-lg shadow-sm bg-white">
+                    <label className="block text-xl font-bold text-sky-700 mb-2">
+                        Multiple Payers
+                    </label>
+                    <InputFileBox
+                        label="Multiple Payers Authorization Letter"
+                        id="authorizationLetter"
+                        name="authorizationLetter"
+                        filename={receiptInfo.authorizationLetter?.name}
+                        description={`*Please name the file as (Event Name)_authorizationLetter`}
+                        onChange={handleMultiplePayersChange}
+                        isRequired={true}
+                        error={errors[0]?.authorizationLetter}
+                    />
+                </div>
+                }
                 {receiptInfo.receipts.map((receipt) => (
                 <div key={receipt.receiptId} className="mb-4 p-4 border rounded-lg shadow-sm bg-white">
                     <label className="block text-xl font-bold text-sky-700 mb-2">
@@ -142,16 +249,27 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                         Payment method: {paymentMethodNames[receipt.paymentMethod as paymentMethodsKeys]}
                     </label>
 
+                    <label className="block text-md font-semibold text-gray-700 mb-2">
+                        Type of Purchase: {purchaseTypeNames[receipt.purchaseType as purchaseTypeKeys]}
+                    </label>
+
                     <label className="block text-md font-semibold text-gray-700 mb-4">
                         Amount: HK$ {receipt.amount}
                     </label>
 
                     <div className="border-t-2 border-gray-300 my-4" />
 
-                    {(receipt.paymentMethod === 'Cash' || receipt.paymentMethod === 'Octopus') &&
-                        <label className="block text-sm text-gray-700 mb-2">
-                            No additional document required
-                        </label>
+                    { receipt.purchaseType !== 'TransportationWithoutReceipt' &&
+                        <InputFileBox
+                            label="A copy of receipt"
+                            id="copyOfReceipt"
+                            name="copyOfReceipt"
+                            description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}`}
+                            filename={receipt.copyOfReceipt?.name}
+                            onChange={e => handleReceiptCopyChange(receipt.receiptId, e)}
+                            isRequired={true}
+                            error={errors[receipt.receiptId]?.copyOfReceipt}
+                        />
                     }
 
                     {receipt.paymentMethod === 'Card' &&
@@ -168,7 +286,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                             />
 
                             <InputFileBox
-                                label="A copy of Bank Card with cardholder's name"
+                                label="A Copy of Bank Card With Cardholder's Name"
                                 id="bankCard"
                                 name="bankCard"
                                 filename={receipt.additionalDocs?.bankCard?.name}
@@ -183,7 +301,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                     {receipt.paymentMethod === 'MobileWithCard' &&
                         <div>
                             <InputFileBox
-                                label="Declaration Form"
+                                label="Mobile Payment Declaration Form"
                                 id="declarationForm"
                                 name="declarationForm"
                                 filename={receipt.additionalDocs?.declarationForm?.name}
@@ -194,7 +312,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                             />
 
                             <InputFileBox
-                                label="Transaction History with bank account number"
+                                label="Transaction History With Bank Account Number"
                                 id="transactionHistory"
                                 name="transactionHistory"
                                 filename={receipt.additionalDocs?.transactionHistory?.name}
@@ -205,7 +323,7 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                             />
 
                             <InputFileBox
-                                label="A copy of Bank Card with cardholder's name"
+                                label="A copy of Bank Card With Cardholder's Name"
                                 id="bankCard"
                                 name="bankCard"
                                 filename={receipt.additionalDocs?.bankCard?.name}
@@ -284,6 +402,73 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 <Image className="flex justify-center" src="/images/taobao-receipt.png" width={500} height={500} alt="Delivery Note" />
                             </div>
                         </div>
+                    }
+
+                    {receipt.purchaseType === 'TransportationWithReceipt' && 
+                        <div>
+                            <InputFileBox
+                                label="Transportation Report"
+                                id="transportationReport"
+                                name="transportationReport"
+                                filename={receipt.additionalDocs?.transportationReport?.name}
+                                description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_transportationReport`}
+                                onChange={e => handleDocumentChange(receipt.receiptId, e)}
+                                isRequired={true}
+                                error={errors[receipt.receiptId]?.transportationReport}
+                            />
+                        </div>
+                    }
+
+                    {receipt.purchaseType === 'TransportationWithoutReceipt' &&
+                        <div>
+                            <InputFileBox
+                                label="Transportation Report"
+                                id="transportationReport"
+                                name="transportationReport"
+                                filename={receipt.additionalDocs?.transportationReport?.name}
+                                description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_transportationReport`}
+                                onChange={e => handleDocumentChange(receipt.receiptId, e)}
+                                isRequired={true}
+                                error={errors[receipt.receiptId]?.transportationReport}
+                            />
+
+                            <InputFileBox
+                                label="Transportation Expenses Form"
+                                id="transportationExpensesForm"
+                                name="transportationExpensesForm"
+                                filename={receipt.additionalDocs?.transportationExpensesForm?.name}
+                                description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_transportationExpensesForm`}
+                                onChange={e => handleDocumentChange(receipt.receiptId, e)}
+                                isRequired={true}
+                                error={errors[receipt.receiptId]?.transportationExpensesForm}
+                            />
+                        </div>
+                    }
+
+                    { receipt.purchaseType === 'MealsNeedMenu' &&
+                        <InputFileBox
+                            label="Menu"
+                            id="menu"
+                            name="menu"
+                            filename={receipt.additionalDocs?.menu?.name}
+                            description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_menu`}
+                            onChange={e => handleDocumentChange(receipt.receiptId, e)}
+                            isRequired={true}
+                            error={errors[receipt.receiptId]?.menu}
+                        />
+                    }
+
+                    { receipt.purchaseType === 'Gifts' &&
+                        <InputFileBox
+                            label="Recipients' Acknowledgement of Receipt Form"
+                            id="giftAcknowledgement"
+                            name="giftAcknowledgement"
+                            filename={receipt.additionalDocs?.giftAcknowledgement?.name}
+                            description={`*Please name the file as (Event Name)_receipt_${receipt.receiptId}_giftAcknowledgement`}
+                            onChange={e => handleDocumentChange(receipt.receiptId, e)}
+                            isRequired={true}
+                            error={errors[receipt.receiptId]?.giftAcknowledgement}
+                        />
                     }
 
                 </div>

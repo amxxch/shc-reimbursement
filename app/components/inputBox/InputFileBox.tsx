@@ -29,7 +29,7 @@ const InputFileBox = ({ label, description, id, name, filename, onChange, isRequ
       {/* Hidden file input that maintains state */}
       <input
         type="file"
-        accept=".pdf,.jpg,.png" 
+        accept=".pdf,.jpg,.png, .jpeg" 
         id={id}
         name={name}
         required={isRequired}

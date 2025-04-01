@@ -12,6 +12,12 @@ interface ReceiptDto {
 export async function POST(req: NextRequest) {
 
     try {
+        const acceptHeader = req.headers.get('accept');
+
+        if (acceptHeader?.includes('text/html')) {
+            return new NextResponse('API access only', { status: 403 });
+        }
+        
         const formData = await req.formData();
 
         // Create a new reimbursement request
