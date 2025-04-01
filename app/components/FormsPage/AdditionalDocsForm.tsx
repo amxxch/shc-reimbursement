@@ -388,6 +388,8 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 isRequired={true}
                                 error={errors[receipt.receiptId]?.deliveryNote}
                             />
+                            <Image className="flex justify-center mb-5" src="/images/taobao-delivery-note.png" width={500} height={500} alt="TaoBao Delivery Note Sample" />
+
                             <InputFileBox
                                 label="Transaction Record。显示“已签收”的交货单。"
                                 id="transactionRecord"
@@ -398,9 +400,9 @@ const AdditionalDocsForm = ({ receiptInfo, onChange, currentStep, setCurrentStep
                                 isRequired={true}
                                 error={errors[receipt.receiptId]?.transactionRecord}
                             />
-                            <div className='flex justify-center'>
-                                <Image className="flex justify-center" src="/images/taobao-receipt.png" width={500} height={500} alt="Delivery Note" />
-                            </div>
+                            <Image className="flex justify-center mb-5" src="/images/taobao-receipt.png" width={500} height={500} alt="TaoBao Receipt Sample 1" />
+                            <Image className="flex justify-center mb-5" src="/images/taobao-sample-2.png" width={500} height={500} alt="TaoBao Receipt Sample 2" />
+
                         </div>
                     }
 
