@@ -84,12 +84,12 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
         const newReceiptErrors: Record<number, Record<string, string>> = {};
 
         const sumAmount = receiptInfo.receipts.reduce((sum, receipt) => {
-            return sum + (parseInt(receipt.amount) || 0);
+            return sum + (parseFloat(receipt.amount) || 0);
         }, 0);
-        const totalAmount = parseInt(receiptInfo.totalAmount) || 0;
+        const totalAmount = parseFloat(receiptInfo.totalAmount) || 0;
 
         if (!receiptInfo.totalAmount) newInfoErrors.totalAmount = 'Total Amount is required'
-        else if (parseInt(receiptInfo.totalAmount) <= 0) newInfoErrors.totalAmount = 'Total amount must be more than 0'
+        else if (parseFloat(receiptInfo.totalAmount) <= 0) newInfoErrors.totalAmount = 'Total amount must be more than 0'
         else if (sumAmount !== totalAmount) newInfoErrors.totalAmount = 'Total amount must be equal to sum of each receipt'
         if (!receiptInfo.isMultiplePayers) newInfoErrors.isMultiplePayers = 'Please select if there are multiple payers'
 
@@ -100,7 +100,7 @@ const ReceiptInfoForm = ({ receiptInfo, onChange, currentStep, setCurrentStep } 
 
             if (!receipt.description) receiptError.description = 'Description is required'
             if (!receipt.amount) receiptError.amount = 'Amount is required'
-            else if (parseInt(receipt.amount) <= 0) receiptError.amount = 'Amount must be more than 0'
+            else if (parseFloat(receipt.amount) <= 0) receiptError.amount = 'Amount must be more than 0'
             if (!receipt.paymentMethod) receiptError.paymentMethod = 'Payment method is required'
             if (!receipt.purchaseType) receiptError.purchaseType = 'Purchase type is required'
 
