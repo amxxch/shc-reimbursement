@@ -1,0 +1,23 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "api/generate_pdf.py",
+        "use": "@vercel/python"
+      },
+      {
+        "src": "app/**/*",
+        "use": "@vercel/next"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/generate-pdf/(.*)",
+        "dest": "api/generate_pdf.py"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "app"
+      }
+    ]
+  }
