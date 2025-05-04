@@ -12,7 +12,7 @@
     ],
     "routes": [
       {
-        "src": "/api/generate-pdf/(.*)",
+        "src": "/api/generate-pdf/(\\d+)",
         "dest": "api/generate_pdf.py"
       },
       {
