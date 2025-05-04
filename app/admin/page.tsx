@@ -172,6 +172,22 @@ export default function AdminPage() {
       .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before capital letters
       .replace(/^./, (str) => str.toUpperCase()); // Capitalize the first letter
   }
+  const generatePDF = async (requestId: number) => {
+    try {
+      const response = await fetch(`/api/generate-pdf/${requestId}`);
+      if (!response.ok) throw new Error('Failed to generate PDF');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Reimbursement Claims Form_${requestId}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
+  };
     
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -229,12 +245,12 @@ export default function AdminPage() {
                 <div className="p-6 border-t border-gray-200 bg-white">
                     {/* Button */}
                     <div className="flex justify-end mb-3 gap-5">
-                        <button
-                            className="px-3 py-1 bg-blue-50 text-blue-600 rounded-md text-sm hover:bg-gray-100"
-                        >
-                            {/* <FaFile className="h-5 w-5" /> */}
-                            Auto Fill
-                        </button>
+                    <button
+                      className="px-3 py-1 bg-blue-50 text-blue-600 rounded-md text-sm hover:bg-gray-100"
+                      onClick={() => generatePDF(request.request_id)}
+                    > 
+                      Auto Fill
+                    </button>
                         
                         <button
                             className="text-gray-600 hover:text-black p-2"
